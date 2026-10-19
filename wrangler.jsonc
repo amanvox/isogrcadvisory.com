@@ -1,12 +1,23 @@
 {
   "name": "isogrcadvisory",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-10-18",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "404-page"
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    // Only the lead API runs Worker code; every page is served straight from static assets.
+    "run_worker_first": ["/api/*"]
   },
   "routes": [
     { "pattern": "isogrcadvisory.com", "custom_domain": true },
     { "pattern": "www.isogrcadvisory.com", "custom_domain": true }
-  ]
+  ],
+  "d1_databases": [
+    { "binding": "DB", "database_name": "isogrcadvisory-leads", "database_id": "c01fe26a-af62-488b-86c5-52678ce6b2f2", "migrations_dir": "migrations" }
+  ],
+  // Alert recipient is the LEAD_NOTIFY_TO secret (a verified Email Routing destination), not stored in the repo.
+  "send_email": [{ "name": "LEAD_MAIL" }],
+  "triggers": { "crons": ["*/15 * * * *"] },
+  "observability": { "enabled": true }
 }

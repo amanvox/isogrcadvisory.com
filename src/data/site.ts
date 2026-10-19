@@ -9,7 +9,7 @@ export const site = {
   locale: 'en',
 
   contact: {
-    email: 'hello@example.com', // TODO: switch to e.g. hello@isogrcadvisory.com once the mailbox exists (it then shows automatically)
+    email: 'hello@isogrcadvisory.com', // Cloudflare Email Routing forwards this address
     phoneUAE: '+971564039650', // TODO: confirm this number may be published for the brand
     phoneKSA: '+966546351297', // TODO: confirm this number may be published for the brand
     whatsapp: '971564039650', // digits only, used for wa.me links
@@ -28,9 +28,9 @@ export const site = {
   // Cities shown in the hero strip and footer. TODO: keep only cities you can genuinely serve.
   servedCities: ['riyadh', 'jeddah', 'dammam-khobar', 'dubai', 'abu-dhabi', 'sharjah'],
 
-  // Lead endpoint (Google Apps Script web app — see integrations/google-apps-script.gs).
-  // Leave empty during development: forms then fall back to a WhatsApp handoff.
-  leadEndpoint: '',
+  // Lead endpoint: the Worker in worker/index.ts (stores in D1 and emails an alert).
+  // Set to '' to fall back to a WhatsApp handoff.
+  leadEndpoint: '/api/lead',
 
   // Analytics only load after the visitor accepts the consent banner AND an ID is set.
   analytics: {

@@ -88,10 +88,14 @@ export function newLeadId() {
   return `L${Date.now().toString(36).toUpperCase()}-${r[0].toString(36).slice(0, 5).toUpperCase()}`;
 }
 
-// Apps Script web apps don't answer CORS preflights, so we post text/plain with no-cors.
-// The response is opaque; delivery failures surface in the Apps Script execution log.
+// Same-origin endpoints (the site's own Worker) return a real status we can check.
+// External Apps Script URLs don't answer CORS preflights, so those post text/plain with no-cors (opaque response).
 export async function sendLead(endpoint: string, payload: Record<string, unknown>) {
   if (!endpoint) return false;
+  if (endpoint.startsWith('/')) {
+    const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true });
+    return res.ok;
+  }
   await fetch(endpoint, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
   return true;
 }
