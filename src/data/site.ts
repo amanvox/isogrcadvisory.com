@@ -31,10 +31,12 @@ export const site = {
   // Lead endpoint: the Worker in worker/index.ts (stores in D1 and emails an alert).
   // Set to '' to fall back to a WhatsApp handoff.
   leadEndpoint: '/api/lead',
+  // Public Turnstile site key (the secret lives in the Worker as TURNSTILE_SECRET).
+  turnstileSiteKey: '0x4AAAAAAFbGkmpA1YQE3npz',
 
   // Analytics only load after the visitor accepts the consent banner AND an ID is set.
   analytics: {
-    ga4Id: '', // e.g. 'G-XXXXXXX'
+    ga4Id: 'G-N4HHWTGS48',
   },
 
   markets: ['United Arab Emirates', 'Saudi Arabia'],

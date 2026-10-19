@@ -12,11 +12,12 @@ import { site } from '../data/site';
       <p>This site is operated by {site.name}. Contact: {site.showEmail ? <a href={`mailto:${site.contact.email}`} class="underline">{site.contact.email}</a> : <a href="/enquire/" class="underline">our enquiry form</a>}. {/* TODO: legal entity name, licence and registered address */}</p>
       <h2>What we collect</h2>
       <p>The details you enter in an enquiry form (your name, contact details, country, organisation and the requirement you describe), plus campaign and referral information about how you reached the site, such as a search ad parameter. We don’t ask for sensitive personal data.</p>
+      <p>To keep the forms free of spam, enquiry forms use Cloudflare Turnstile, a security check that may process technical information about your browser and connection. We store only a salted, one-way hash of your IP address to limit repeated submissions, never the address itself.</p>
       <h2>Why we use it</h2>
       <ul>
         <li>To respond to your enquiry and prepare a proposal, based on your consent.</li>
         <li>To send occasional guides and course dates, only if you separately opted in.</li>
-        <li>To understand which pages and campaigns help visitors. Analytics run only if you accept analytics cookies.</li>
+        <li>To understand which pages and campaigns help visitors. Google Analytics runs only if you accept analytics cookies. Cloudflare Web Analytics, which sets no cookies, measures overall page views.</li>
       </ul>
       <h2>Who we share it with</h2>
       <p>Only the specialist partners engaged to fulfil your request (for example consultants, trainers or a software provider when you ask for help evaluating its platform), and the service providers that host our forms and records. Partners receive only what they need to respond. We don’t sell personal data.</p>

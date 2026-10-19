@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/csp.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "seo:audit": "python3 scripts/seo-audit.py dist docs/URL-INVENTORY.md"

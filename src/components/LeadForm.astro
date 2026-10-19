@@ -17,7 +17,7 @@ const { route = '', standard = '', course = '', heading = 'Tell us what you need
   <p class="text-[22px] font-medium tracking-[-0.015em]">{heading}</p>
   <p class="mt-1 text-sm text-ink-soft">{sub}</p>
 
-  <form data-lead-form data-endpoint={site.leadEndpoint} data-wa={site.contact.whatsapp} class="mt-6" novalidate>
+  <form data-lead-form data-endpoint={site.leadEndpoint} data-wa={site.contact.whatsapp} data-sitekey={site.turnstileSiteKey} class="mt-6" novalidate>
     <input type="hidden" name="course" value={course} />
     <input type="hidden" name="readiness_score" value="" />
     <div class="hidden" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></div>
@@ -52,6 +52,7 @@ const { route = '', standard = '', course = '', heading = 'Tell us what you need
         <input type="checkbox" name="consent_service" value="yes" required class="mt-1 accent-teal" />
         <span>I agree to ISO GRC Advisory contacting me about this enquiry. My details may be shared with specialist partners engaged to fulfil it. <a href="/privacy/" class="underline">Privacy notice</a></span>
       </label>
+      <div data-turnstile></div>
       <p data-error class="hidden rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"></p>
       <button type="button" data-next class="btn-primary w-full">Continue</button>
     </fieldset>
@@ -168,6 +169,7 @@ const { route = '', standard = '', course = '', heading = 'Tell us what you need
 
 <script>
   import { scoreLead, newLeadId, sendLead, getContext, track } from '../scripts/lead';
+  import { createChallenge } from '../scripts/turnstile';
 
   function collect(form: HTMLFormElement) {
     const fd = new FormData(form);
@@ -198,6 +200,19 @@ const { route = '', standard = '', course = '', heading = 'Tell us what you need
     const endpoint = form.dataset.endpoint || '';
     const leadId = newLeadId();
     let started = false;
+    let saved = false; // true once the server has accepted this lead (later posts then need no new challenge)
+    let challenge: ReturnType<typeof createChallenge> | null = null;
+    const startChallenge = () => {
+      if (!challenge && form.dataset.sitekey) challenge = createChallenge(form.querySelector<HTMLElement>('[data-turnstile]')!, form.dataset.sitekey);
+    };
+    async function post(p: Record<string, unknown>) {
+      const token = !saved && challenge ? await challenge.getToken() : '';
+      let ok = await sendLead(endpoint, token ? { ...p, cf_turnstile: token } : p);
+      // The server asks for a fresh challenge if the visitor's network changed between steps.
+      if (!ok && saved && challenge) ok = await sendLead(endpoint, { ...p, cf_turnstile: await challenge.getToken() });
+      if (ok) saved = true;
+      return ok;
+    }
 
     // Pull readiness score / course from the URL when arriving from a tool or course card.
     const qs = new URLSearchParams(location.search);
@@ -206,7 +221,7 @@ const { route = '', standard = '', course = '', heading = 'Tell us what you need
     const qStd = qs.get('standard');
     if (qStd) form.querySelectorAll<HTMLInputElement>('input[name="standards"]').forEach((c) => { if (c.value === qStd) c.checked = true; });
 
-    form.addEventListener('focusin', () => { if (!started) { started = true; track('form_start', { page: location.pathname }); } });
+    form.addEventListener('focusin', () => { startChallenge(); if (!started) { started = true; track('form_start', { page: location.pathname }); } });
 
     function payload(stage: 'partial' | 'complete') {
       const data = collect(form);
@@ -230,7 +245,7 @@ const { route = '', standard = '', course = '', heading = 'Tell us what you need
       step2.classList.remove('hidden');
       step2.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       track('lead_step1', { route: d.route, country: d.country });
-      try { await sendLead(endpoint, payload('partial')); } catch { /* final submit retries */ }
+      try { await post(payload('partial')); } catch { /* final submit retries */ }
     });
 
     form.querySelector('[data-back]')!.addEventListener('click', () => { step2.classList.add('hidden'); step1.classList.remove('hidden'); });
@@ -242,7 +257,7 @@ const { route = '', standard = '', course = '', heading = 'Tell us what you need
       const btn = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
       btn.disabled = true; btn.textContent = 'Sending…';
       let sent = false;
-      try { sent = await sendLead(endpoint, p); } catch { sent = false; }
+      try { sent = await post(p); } catch { sent = false; }
       track('generate_lead', { route: p.route, tier: p.score.tier, value: p.score.total });
       try { sessionStorage.setItem('cd_last_lead', JSON.stringify({ id: leadId, route: p.route, sent })); } catch {}
       if (!sent) {

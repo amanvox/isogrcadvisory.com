@@ -18,6 +18,8 @@
   ],
   // Alert recipient is the LEAD_NOTIFY_TO secret (a verified Email Routing destination), not stored in the repo.
   "send_email": [{ "name": "LEAD_MAIL" }],
+  // Per-IP burst limit on /api/lead (each enquiry is two posts). Hourly cap on new leads is enforced in D1.
+  "ratelimits": [{ "name": "LEAD_LIMITER", "namespace_id": "2401", "simple": { "limit": 8, "period": 60 } }],
   "triggers": { "crons": ["*/15 * * * *"] },
   "observability": { "enabled": true }
 }
