@@ -83,33 +83,64 @@ export function buildAlert(d: Lead, partial: boolean) {
     'Reply to this email to answer the enquirer directly.',
   ].join('\n');
 
-  // HTML
-  const tierColor = tier === 'priority' ? '#0F7481' : tier === 'nurture' ? '#9C7636' : '#5B6B7C';
-  const link = (k: string, v: string) => {
-    if (k === 'email' && email) return `<a href="mailto:${esc(email)}" style="color:#0F7481">${esc(v)}</a>`;
-    if (k === 'phone' && phoneDigits.length >= 7)
-      return `<a href="tel:+${phoneDigits}" style="color:#0F7481">${esc(v)}</a> &nbsp;·&nbsp; <a href="https://wa.me/${phoneDigits}" style="color:#0F7481">WhatsApp</a>`;
+  // HTML: table layout with inline styles only (email clients ignore <style> blocks and flexbox).
+  const C = { navy: '#061A2E', ink: '#0B1D30', muted: '#5B6B7C', line: '#DCE1E6', band: '#F3F5F7', teal: '#0F7481', gold: '#9C7636', brass: '#D9BC82' };
+  const tierColor = tier === 'priority' ? C.teal : tier === 'nurture' ? C.gold : C.muted;
+  const font = 'font-family:Arial,Helvetica,sans-serif;';
+  const cellValue = (k: string, v: string) => {
+    if (k === 'email' && email) return `<a href="mailto:${esc(email)}" style="color:${C.teal};text-decoration:none">${esc(v)}</a>`;
+    if (k === 'phone' && phoneDigits.length >= 7) return `<a href="tel:+${phoneDigits}" style="color:${C.teal};text-decoration:none">${esc(v)}</a>`;
     return esc(v).replace(/\n/g, '<br>');
   };
-  const rowsHtml = (rows: readonly (readonly [string, string, string?])[]) =>
-    rows.map(([l, v, k]) => `<tr><td width="130" style="width:130px;padding:6px 12px 6px 0;color:#5B6B7C;vertical-align:top;font-size:13px">${esc(l)}</td><td style="padding:6px 0;font-size:14px;color:#0B1D30">${link(k || '', v)}</td></tr>`).join('');
-  const block = (title: string, inner: string) =>
-    `<tr><td style="padding:18px 24px 4px"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#9C7636;font-weight:600">${esc(title)}</div><table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:6px;border-collapse:collapse">${inner}</table></td></tr>`;
+  const table = (title: string, rows: readonly (readonly [string, string, string?])[]) => `
+<tr><td style="padding:22px 28px 0">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid ${C.line}">
+    <tr><td colspan="2" style="${font}background:${C.band};border-bottom:1px solid ${C.line};padding:9px 14px;font-size:11px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;color:${C.gold}">${esc(title)}</td></tr>
+    ${rows.map(([l, v, k], i) => `<tr>
+      <td width="34%" style="${font}width:34%;padding:10px 14px;font-size:13px;color:${C.muted};vertical-align:top;border-top:${i ? `1px solid ${C.line}` : '0'};background:#FBFCFD">${esc(l)}</td>
+      <td style="${font}padding:10px 14px;font-size:14px;line-height:1.5;color:${C.ink};vertical-align:top;border-top:${i ? `1px solid ${C.line}` : '0'};border-left:1px solid ${C.line}">${cellValue(k || '', v)}</td>
+    </tr>`).join('')}
+  </table>
+</td></tr>`;
+  const button = (href: string, label: string, primary: boolean) =>
+    `<td style="padding:0 8px 8px 0"><a href="${esc(href)}" style="${font}display:inline-block;padding:10px 18px;font-size:13px;font-weight:bold;text-decoration:none;${primary ? `background:${C.teal};color:#ffffff;border:1px solid ${C.teal}` : `background:#ffffff;color:${C.teal};border:1px solid ${C.teal}`}">${esc(label)}</a></td>`;
+  const actions = [
+    email ? button(`mailto:${email}?subject=${encodeURIComponent('Re: your enquiry to ISO GRC Advisory')}`, 'Reply by email', true) : '',
+    phoneDigits.length >= 7 ? button(`https://wa.me/${phoneDigits}`, 'WhatsApp', !email) : '',
+    phoneDigits.length >= 7 ? button(`tel:+${phoneDigits}`, 'Call', false) : '',
+  ].join('');
+  const stat = (label: string, value: string, color = '#ffffff') =>
+    `<td style="${font}padding:12px 16px 0 0;vertical-align:top"><div style="font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:#8FA3B8">${esc(label)}</div><div style="font-size:15px;font-weight:bold;color:${color};margin-top:3px">${esc(value)}</div></td>`;
 
-  const html = `<!doctype html><html><body style="margin:0;background:#F3F5F7;font-family:Arial,Helvetica,sans-serif">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3F5F7;padding:20px 0"><tr><td align="center">
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#fff;border:1px solid #DCE1E6">
-<tr><td style="background:#061A2E;padding:18px 24px;color:#fff">
-  <div style="font-size:12px;color:#D9BC82;letter-spacing:.12em;text-transform:uppercase">New enquiry · isogrcadvisory.com</div>
-  <div style="font-size:20px;font-weight:bold;margin-top:6px">${esc(route)}</div>
-  <div style="margin-top:10px"><span style="display:inline-block;background:${tierColor};color:#fff;font-size:12px;font-weight:bold;padding:3px 8px;text-transform:uppercase">${esc(tier)} · ${esc(String(total))}/100</span>
-  <span style="font-size:13px;color:#C9D3DD;margin-left:8px">${esc(received)}</span></div>
+  const html = `<!doctype html><html><head><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"></head>
+<body style="margin:0;padding:0;background:${C.band}">
+<div style="display:none;max-height:0;overflow:hidden">${esc(`${val(d, 'name')}${val(d, 'company') ? ', ' + val(d, 'company') : ''} · ${val(d, 'country')} · ${tier} ${total}/100`)}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.band};padding:24px 12px"><tr><td align="center">
+<table role="presentation" width="640" cellpadding="0" cellspacing="0" style="max-width:640px;width:100%;background:#ffffff;border:1px solid ${C.line};border-collapse:collapse">
+
+<tr><td style="background:${C.navy};padding:22px 28px 20px;border-bottom:3px solid ${C.brass}">
+  <div style="${font}font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:${C.brass}">ISO GRC Advisory · New enquiry</div>
+  <div style="${font}font-size:22px;line-height:1.3;font-weight:bold;color:#ffffff;margin-top:8px">${esc(route)}</div>
+  <div style="${font}font-size:15px;color:#C9D3DD;margin-top:4px">${esc(val(d, 'name'))}${val(d, 'company') ? ' · ' + esc(val(d, 'company')) : ''}${val(d, 'country') ? ' · ' + esc(val(d, 'country')) : ''}</div>
+  <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+    <td style="${font}padding:14px 16px 0 0;vertical-align:top"><span style="display:inline-block;background:${tierColor};color:#ffffff;font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;padding:6px 10px">${esc(tier)} · ${esc(String(total))}/100</span></td>
+    ${stat('Timeline', val(d, 'timeline') || '–')}
+    ${stat('Received', received.replace(' (Dubai)', ''))}
+  </tr></table>
 </td></tr>
-${partial ? '<tr><td style="padding:12px 24px;background:#FFF6E5;color:#6B4E16;font-size:13px">Only step 1 was completed. Contact details and consent were given.</td></tr>' : ''}
-${sections.map(([title, rows]) => block(title, rowsHtml(rows))).join('')}
-${block('Details', rowsHtml(meta))}
-<tr><td style="padding:18px 24px 22px;font-size:13px;color:#5B6B7C;border-top:1px solid #DCE1E6">Reply to this email to answer ${esc(val(d, 'name') || 'the enquirer')} directly.</td></tr>
-</table></td></tr></table></body></html>`;
+
+${partial ? `<tr><td style="${font}padding:12px 28px;background:#FFF6E5;color:#6B4E16;font-size:13px;border-bottom:1px solid #F1DFB8">Only step 1 was completed. Contact details and consent were given; the optional questions were skipped.</td></tr>` : ''}
+${actions ? `<tr><td style="padding:20px 28px 0"><table role="presentation" cellpadding="0" cellspacing="0"><tr>${actions}</tr></table></td></tr>` : ''}
+${sections.map(([title, rows]) => table(title, rows)).join('')}
+${table('Lead details', meta.map(([l, v]) => [l, v] as const))}
+
+<tr><td style="${font}padding:22px 28px 26px;font-size:12px;line-height:1.6;color:${C.muted}">
+  Replying to this email goes straight to ${esc(val(d, 'name') || 'the enquirer')}.<br>
+  Stored in the lead register as <span style="color:${C.ink}">${esc(d.lead_id)}</span>.
+</td></tr>
+</table>
+</td></tr></table>
+</body></html>`;
 
   return { subject, text, html };
 }
