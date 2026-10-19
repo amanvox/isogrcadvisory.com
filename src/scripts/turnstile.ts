@@ -33,6 +33,7 @@ export function createChallenge(el: HTMLElement, sitekey: string) {
       widgetId = window.turnstile!.render(el, {
         sitekey,
         action: 'lead',
+        'response-field': false, // don't inject a hidden input; the token is passed explicitly
         appearance: 'interaction-only', // invisible unless Cloudflare needs the visitor to click
         callback: (t: string) => { token = t; waiters.splice(0).forEach((w) => w(t)); },
         'expired-callback': () => { token = ''; },

@@ -9,6 +9,7 @@
 // IP_HASH_SALT, optional SHEET_WEBHOOK (Google Apps Script /exec URL to mirror rows into a Sheet).
 
 import { EmailMessage } from 'cloudflare:email';
+import { buildAlert, mime, ROUTES } from './email';
 
 interface Env {
   ASSETS: { fetch: (req: Request) => Promise<Response> };
@@ -30,15 +31,6 @@ const SITE_HOSTS = /^(www\.)?isogrcadvisory\.com$/;
 const DEV_HOSTS = /^(localhost|127\.0\.0\.1)$/;
 const MAX_BODY = 32_000;
 const MAX_NEW_LEADS_PER_IP_PER_HOUR = 6;
-const ROUTES: Record<string, string> = {
-  'iso-consulting': 'ISO implementation / certification readiness',
-  'iso-training': 'ISO auditor training',
-  'other-training': 'Other professional training',
-  'workforce-ld': 'Workforce, academy & L&D',
-  'grc-consulting': 'GRC, risk, audit & regulatory compliance',
-  'compliance-software': 'Choosing GRC / compliance software',
-  'not-sure': 'Not sure yet',
-};
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -99,7 +91,8 @@ export default {
     if (!ROUTES[str(lead.route, 40)]) return json({ ok: false, error: 'route' }, 422);
 
     const token = str(lead.cf_turnstile, 4096);
-    delete lead.cf_turnstile;
+    // Never store challenge tokens (the widget also adds its own hidden form field).
+    for (const k of Object.keys(lead)) if (k === 'cf_turnstile' || k.startsWith('cf-turnstile') || k.startsWith('g-recaptcha')) delete lead[k];
     const ipHash = ip ? await sha256(`${env.IP_HASH_SALT}|${ip}`) : '';
 
     // A new lead must pass Turnstile and the hourly per-IP cap; later posts for the same lead_id
@@ -155,28 +148,9 @@ async function notify(env: Env, id: string) {
   const claimed = await env.DB.prepare(`UPDATE leads SET notified_at = ?2 WHERE lead_id = ?1 AND notified_at IS NULL RETURNING data, stage`).bind(id, new Date().toISOString()).first<{ data: string; stage: string }>();
   if (!claimed || !env.LEAD_NOTIFY_TO) return;
   const d = JSON.parse(claimed.data) as Lead;
-  const tier = str(d.score?.tier) || 'unscored';
-  const route = ROUTES[str(d.route)] || str(d.route);
-  const partial = claimed.stage !== 'complete';
-  const subject = `${partial ? '[Step 1 only] ' : ''}[${tier.toUpperCase()}] ${route} — ${str(d.name, 60)}${d.company ? ', ' + str(d.company, 60) : ''}`;
-
-  const skip = new Set(['lead_id', 'stage', 'score', 'first_touch', 'last_touch', 'engagement', 'website', 'submitted_at']);
-  const lines = Object.entries(d)
-    .filter(([k, v]) => !skip.has(k) && v !== '' && v != null && typeof v !== 'object')
-    .map(([k, v]) => `${k.replace(/_/g, ' ').padEnd(18)} ${String(v).slice(0, 1000)}`);
-  const ft = (d.first_touch || {}) as Record<string, string>;
-  const source = [ft.utm_source, ft.utm_medium, ft.utm_campaign].filter(Boolean).join(' / ') || str(ft.referrer) || 'direct';
-  const body = [
-    partial ? 'The visitor completed step 1 but not step 2. Contact details and consent were given.\n' : '',
-    `Lead ${d.lead_id}  ·  score ${d.score?.total ?? '-'} (${tier})  ·  source: ${source}`,
-    '',
-    ...lines,
-    '',
-    'Reply to this email to answer the enquirer directly.',
-  ].join('\n');
-
-  const replyTo = /^[^\s@<>,;]+@[^\s@<>,;]+\.[^\s@<>,;]+$/.test(str(d.email)) ? str(d.email) : '';
-  const raw = mime({ from: FROM, to: env.LEAD_NOTIFY_TO, replyTo, subject, body });
+  const { subject, text, html } = buildAlert(d, claimed.stage !== 'complete');
+  const replyTo = isEmail(str(d.email, 254)) ? str(d.email, 254) : '';
+  const raw = mime({ from: FROM, to: env.LEAD_NOTIFY_TO, replyTo, subject, text, html });
   try {
     await env.LEAD_MAIL.send(new EmailMessage(FROM, env.LEAD_NOTIFY_TO, raw));
   } catch (err) {
@@ -184,23 +158,4 @@ async function notify(env: Env, id: string) {
     await env.DB.prepare(`UPDATE leads SET notified_at = NULL WHERE lead_id = ?1`).bind(id).run();
     console.error('lead email failed', id, err);
   }
-}
-
-function mime(m: { from: string; to: string; replyTo: string; subject: string; body: string }) {
-  const clean = (s: string) => s.replace(/[\r\n]+/g, ' ');
-  const b64 = (s: string) => btoa(String.fromCharCode(...new TextEncoder().encode(s)));
-  const bodyB64 = b64(m.body).replace(/.{76}/g, '$&\r\n');
-  return [
-    `From: ISO GRC Advisory Leads <${m.from}>`,
-    `To: ${clean(m.to)}`,
-    ...(m.replyTo ? [`Reply-To: ${clean(m.replyTo)}`] : []),
-    `Subject: =?UTF-8?B?${b64(clean(m.subject))}?=`,
-    `Message-ID: <${crypto.randomUUID()}@isogrcadvisory.com>`,
-    `Date: ${new Date().toUTCString()}`,
-    'MIME-Version: 1.0',
-    'Content-Type: text/plain; charset=UTF-8',
-    'Content-Transfer-Encoding: base64',
-    '',
-    bodyB64,
-  ].join('\r\n');
 }

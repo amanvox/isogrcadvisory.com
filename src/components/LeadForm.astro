@@ -176,7 +176,7 @@ const { route = '', standard = '', course = '', heading = 'Tell us what you need
     const out: Record<string, string> = {};
     for (const [k, v] of fd.entries()) {
       const val = String(v).trim();
-      if (!val) continue;
+      if (!val || k.startsWith('cf-turnstile')) continue; // the widget's own hidden field; the token is sent separately
       out[k] = out[k] ? `${out[k]}, ${val}` : val;
     }
     if (out.course_text) out.course = out.course_text;
