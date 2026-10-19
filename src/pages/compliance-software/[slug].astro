@@ -1,0 +1,76 @@
+---
+import Base from '../../layouts/Base.astro';
+import { clip } from '../../lib/seo';
+import LeadForm from '../../components/LeadForm.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Faq from '../../components/Faq.astro';
+import { modules, regulations, type Module } from '../../data/grc';
+
+export function getStaticPaths() {
+  return modules.map((m) => ({ params: { slug: m.slug }, props: { m } }));
+}
+const { m } = Astro.props as { m: Module };
+const regs = regulations.filter((r) => r.relatedModules.includes(m.slug));
+const others = modules.filter((x) => x.slug !== m.slug).slice(0, 4);
+const title = m.name.charAt(0).toUpperCase() + m.name.slice(1);
+const inline = /^[A-Z][a-z]/.test(m.name) ? m.name.charAt(0).toLowerCase() + m.name.slice(1) : m.name;
+const cols = m.workflow.length % 4 === 0 ? 'lg:grid-cols-4' : 'lg:grid-cols-3';
+const faqSchema = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: m.faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) };
+---
+<Base title={`${title}: Buyer’s Guide`} description={clip(`Buyer’s guide to ${m.name}: capabilities to look for, questions to ask vendors and the process it should support, for organisations in the UAE and KSA.`)} schema={faqSchema} crumbs={[{ name: 'GRC Advisory', href: '/grc/' }, { name: 'Software selection', href: '/compliance-software/' }, { name: title }]}>
+  <section class="hero">
+    <div class="container-x grid items-start gap-10 py-16 lg:grid-cols-[1.1fr_1fr]">
+      <div>
+        <p class="eyebrow">Buyer’s guide</p>
+        <h1 class="h1 mt-3">{title}</h1>
+        <p class="lead-text mt-6">{m.short}</p>
+        <h2 class="mt-8 font-semibold">The problem it solves</h2>
+        <p class="mt-2 text-ink-soft">{m.problem}</p>
+        <h2 class="mt-8 font-semibold">Usually bought by</h2>
+        <ul class="mt-3 space-y-2">{m.forWho.map((w) => <li class="flex gap-2"><span class="text-teal">✓</span>{w}</li>)}</ul>
+      </div>
+      <LeadForm route="compliance-software" heading={`Get help choosing ${inline}`} sub="Requirements, shortlist, scripted demos or rollout. We’ll get back to you about the next step." />
+    </div>
+  </section>
+
+  <section class="container-x grid gap-12 py-16 lg:grid-cols-2">
+    <div>
+      <h2 class="h2">Capabilities to look for</h2>
+      <ul class="mt-6 space-y-3">{m.capabilities.map((c) => <li class="card flex gap-3 p-4"><span class="text-teal">✓</span><span class="font-medium">{c}</span></li>)}</ul>
+    </div>
+    <div>
+      <h2 class="h2">Questions to ask vendors</h2>
+      <ol class="mt-6 space-y-4">{m.questions.map((q, i) => <li class="flex gap-4 border-t border-line pt-4"><span class="text-[13px] font-semibold tabular-nums text-gold">0{i + 1}</span><span class="text-[15.5px] leading-relaxed">{q}</span></li>)}</ol>
+      <h3 class="mt-10 font-semibold">Frameworks it should support</h3>
+      <div class="mt-3 flex flex-wrap gap-2">{m.frameworks.map((f) => <span class="border border-line px-3 py-1.5 text-sm">{f}</span>)}</div>
+      {regs.length > 0 && (
+        <div class="mt-8">
+          <p class="font-semibold">Regulation guides</p>
+          <ul class="mt-3 space-y-2">{regs.map((r) => <li><a class="font-medium text-teal hover:underline" href={`/grc/${r.slug}/`}>{r.name} →</a></li>)}</ul>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="night">
+    <div class="container-x py-16">
+      <p class="eyebrow">The process it should support</p>
+      <h2 class="h2 mt-4">If the software can’t run this cycle, keep looking</h2>
+      <ol class:list={["mt-10 grid gap-px border border-white/10 bg-white/10 sm:grid-cols-2", cols]}>
+        {m.workflow.map((w, i) => <li class="bg-night p-5"><span class="text-[13px] font-semibold tabular-nums text-brass-light">{String(i + 1).padStart(2, '0')}</span><p class="mt-2 text-[16px] font-medium text-white">{w}</p></li>)}
+      </ol>
+      <p class="mt-10 text-[13px] font-semibold uppercase tracking-[0.16em] text-brass-light">Should connect with</p>
+      <div class="mt-4 flex flex-wrap gap-2">{m.connects.map((c) => <span class="border border-white/15 px-3 py-1.5 text-[13.5px] text-white/85">{c}</span>)}</div>
+    </div>
+  </section>
+
+  <Faq items={m.faqs} title="Questions" />
+
+  <section class="container-x py-6">
+    <h2 class="h2">Other software guides</h2>
+    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {others.map((o) => <a href={`/compliance-software/${o.slug}/`} class="card p-5 transition hover:border-teal"><p class="font-semibold">{o.name.charAt(0).toUpperCase() + o.name.slice(1)}</p><p class="mt-2 text-sm text-ink-soft">{o.short}</p></a>)}
+    </div>
+  </section>
+  <CtaBand title="Not sure which area to start with?" text="The GRC maturity check shows where your programme is weakest. That’s usually where software helps first." href="/resources/grc-maturity-check/" label="Take the GRC maturity check" />
+</Base>

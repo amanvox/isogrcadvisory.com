@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { site } from '../data/site';
+---
+<Base title="Privacy Notice" description={`How ${site.name} collects, uses, shares and stores the personal data you submit through enquiry forms, and how to exercise your rights.`} crumbs={[{ name: 'Privacy notice' }]}>
+  <PageHeader narrow eyebrow="Legal" title="Privacy notice" />
+  <section class="container-x max-w-3xl py-12">
+    <p class="border-l-2 border-gold bg-paper px-4 py-3 text-sm">Draft for local legal review (UAE PDPL / Saudi PDPL) before launch.</p>
+    <div class="prose-x mt-8">
+      <h2>Who we are</h2>
+      <p>This site is operated by {site.name}. Contact: {site.showEmail ? <a href={`mailto:${site.contact.email}`} class="underline">{site.contact.email}</a> : <a href="/enquire/" class="underline">our enquiry form</a>}. {/* TODO: legal entity name, licence and registered address */}</p>
+      <h2>What we collect</h2>
+      <p>The details you enter in an enquiry form (your name, contact details, country, organisation and the requirement you describe), plus campaign and referral information about how you reached the site, such as a search ad parameter. We don’t ask for sensitive personal data.</p>
+      <h2>Why we use it</h2>
+      <ul>
+        <li>To respond to your enquiry and prepare a proposal, based on your consent.</li>
+        <li>To send occasional guides and course dates, only if you separately opted in.</li>
+        <li>To understand which pages and campaigns help visitors. Analytics run only if you accept analytics cookies.</li>
+      </ul>
+      <h2>Who we share it with</h2>
+      <p>Only the specialist partners engaged to fulfil your request (for example consultants, trainers or a software provider when you ask for help evaluating its platform), and the service providers that host our forms and records. Partners receive only what they need to respond. We don’t sell personal data.</p>
+      <h2>Where it is stored and for how long</h2>
+      <p>{/* TODO: storage location (e.g. Google Workspace region) and cross-border transfer basis */}Enquiry records are kept for up to 24 months after our last contact, then deleted, unless a contract requires longer.</p>
+      <h2>Your rights</h2>
+      <p>You can ask to access, correct or delete your data, or withdraw consent, by {site.showEmail ? `emailing ${site.contact.email}` : "contacting us through the enquiry form"}. We respond within the period required by applicable law.</p>
+    </div>
+  </section>
+</Base>

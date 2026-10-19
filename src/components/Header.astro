@@ -1,0 +1,38 @@
+---
+import { site, nav } from '../data/site';
+const path = Astro.url.pathname;
+const active = (m: string[]) => m.some((x) => path.startsWith(x));
+---
+<header class="sticky top-0 z-40 border-b border-line bg-white/95 text-ink backdrop-blur">
+  <div class="container-x flex h-[76px] items-center justify-between gap-4">
+    <a href="/" class="flex shrink-0 items-center" aria-label={`${site.name} home`}>
+      <img src="/brand/logo-header.png" alt={site.name} width="462" height="112" class="h-10 w-auto sm:h-12" />
+    </a>
+    <nav class="hidden items-center gap-7 text-[14.5px] font-medium text-ink/75 lg:flex" aria-label="Main">
+      {nav.map((n) => (
+        <a href={n.href} class:list={['border-b-2 py-1 transition hover:text-ink', active(n.match) ? 'border-gold text-ink' : 'border-transparent']} aria-current={active(n.match) ? 'page' : undefined}>{n.label}</a>
+      ))}
+    </nav>
+    <div class="flex items-center gap-2">
+      <a href="/enquire/" class="btn-primary hidden px-4 py-2.5 text-[13px] sm:inline-flex">Book a scoping call</a>
+      <button id="menu-btn" class="p-2 lg:hidden" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h16M4 16h16" /></svg>
+      </button>
+    </div>
+  </div>
+  <nav id="mobile-nav" class="hidden border-t border-line bg-white lg:hidden" aria-label="Mobile">
+    <div class="container-x flex flex-col py-3">
+      {nav.map((n) => <a href={n.href} class="border-b border-line py-3 font-medium">{n.label}</a>)}
+      <a href="/about/" class="border-b border-line py-3 font-medium">About</a>
+      <a href="/enquire/" class="btn-primary my-3">Book a scoping call</a>
+    </div>
+  </nav>
+</header>
+<script>
+  const btn = document.getElementById('menu-btn')!;
+  const menu = document.getElementById('mobile-nav')!;
+  btn.addEventListener('click', () => {
+    const open = menu.classList.toggle('hidden') === false;
+    btn.setAttribute('aria-expanded', String(open));
+  });
+</script>

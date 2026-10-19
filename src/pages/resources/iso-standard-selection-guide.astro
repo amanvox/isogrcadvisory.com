@@ -1,0 +1,41 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import CtaBand from '../../components/CtaBand.astro';
+const rows = [
+  ['A tender or vendor registration asks for “ISO certification”', 'ISO 9001 — and often ISO 14001 and ISO 45001 for contractors', 'iso-9001'],
+  ['A customer’s security questionnaire, or national cybersecurity controls', 'ISO/IEC 27001, often alongside ISO/IEC 20000-1 for IT services', 'iso-27001'],
+  ['A regulator or parent company asks for continuity plans', 'ISO 22301 (in the UAE, alongside NCEMA 7000)', 'iso-22301'],
+  ['You are deploying AI and buyers ask how it is governed', 'ISO/IEC 42001', 'iso-42001'],
+  ['You run a testing or calibration laboratory', 'ISO/IEC 17025 accreditation (EIAC / SAAC)', 'iso-17025'],
+  ['You manufacture, distribute or serve food', 'ISO 22000', 'iso-22000'],
+  ['You are a training provider or corporate academy', 'ISO 21001 or ISO 29993', 'iso-21001'],
+  ['You need anti-bribery controls across third parties', 'ISO 37001', 'iso-37001'],
+  ['You manage critical physical assets', 'ISO 55001', 'iso-55001'],
+];
+---
+<Base title="Which ISO Standard Do I Need? UAE & KSA Guide" description="Match your tender, customer or regulator requirement to the right ISO standard, from ISO 9001 and 27001 to 22301, 42001 and 17025, in the UAE and KSA." ogType="article" crumbs={[{ name: 'Resources', href: '/resources/' }, { name: 'Which ISO standard?' }]}>
+  <PageHeader narrow eyebrow="Guide" title="Which ISO standard do I need?" />
+  <article class="container-x max-w-3xl py-12">
+    <div class="prose-x">
+      <p>Most ISO projects in the Gulf don’t start with a love of standards — they start with a sentence in a tender, a customer’s supplier questionnaire or a regulator’s letter. The quickest way to the right answer is to start from that trigger.</p>
+    </div>
+    <div class="mt-6 overflow-hidden rounded-2xl border border-line">
+      {rows.map(([t, s, slug]) => (
+        <div class="grid gap-1 border-b border-line p-4 last:border-0 sm:grid-cols-2 sm:gap-4">
+          <p class="font-semibold">{t}</p>
+          <a href={`/iso/${slug}/`} class="text-teal hover:underline">{s} →</a>
+        </div>
+      ))}
+    </div>
+    <div class="prose-x mt-10">
+      <h2>Combining standards</h2>
+      <p>ISO 9001, 14001, 45001, 27001, 22301 and 42001 share the same high-level structure, so they can run as one integrated management system: one set of shared procedures for documents, internal audit, management review and corrective action. Contractors frequently certify to 9001, 14001 and 45001 together.</p>
+      <h2>Read the tender clause carefully</h2>
+      <p>Check whether it asks for a certificate from an <em>accredited</em> certification body, and whether a specific accreditation is named. A certificate from an unaccredited body may not be accepted. If the clause is ambiguous, ask the buyer before you start.</p>
+      <h2>Training versus certification</h2>
+      <p>Sending a staff member on a lead auditor course does not certify your organisation. It builds the internal capability to run and audit your system — which is usually a good idea, but a separate thing.</p>
+    </div>
+  </article>
+  <CtaBand title="Send us the tender clause" text="Paste the requirement into the enquiry form and we’ll tell you exactly what it calls for." href="/enquire/?route=iso-consulting" label="Ask about a requirement" />
+</Base>

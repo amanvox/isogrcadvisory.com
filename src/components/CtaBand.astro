@@ -1,0 +1,19 @@
+---
+interface Props { title?: string; text?: string; href?: string; label?: string }
+const {
+  title = 'Not sure where to start?',
+  text = 'A 20-minute scoping call clarifies which standard, course or programme fits — and what it will realistically take.',
+  href = '/enquire/',
+  label = 'Book a scoping call',
+} = Astro.props;
+---
+<section class="night mt-16">
+  <div class="container-x flex flex-col items-start justify-between gap-8 py-16 md:flex-row md:items-end">
+    <div class="max-w-2xl">
+      <p class="eyebrow">Next step</p>
+      <p class="h2 mt-3 text-white">{title}</p>
+      <p class="mt-3 text-[16px] leading-relaxed text-white/65">{text}</p>
+    </div>
+    <a href={href} class="btn-gold shrink-0">{label} <span aria-hidden="true">→</span></a>
+  </div>
+</section>

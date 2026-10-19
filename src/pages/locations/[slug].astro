@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+import { clip } from '../../lib/seo';
+import LeadForm from '../../components/LeadForm.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { locations, type Location } from '../../data/locations';
+import { launchedStandards } from '../../data/standards';
+
+export function getStaticPaths() {
+  return locations.map((l) => ({ params: { slug: l.slug }, props: { l } }));
+}
+const { l } = Astro.props as { l: Location };
+const stds = l.focusStandards.map((s) => launchedStandards.find((x) => x.slug === s)).filter((x) => !!x);
+const regional = (s: (typeof stds)[number]) => (l.country === 'UAE' ? s.regionalDrivers.uae : s.regionalDrivers.ksa);
+---
+<Base title={`ISO Certification & Training in ${l.city}`} description={clip(`ISO certification readiness, GRC advisory and auditor training in ${l.city}, ${l.country}. ${l.intro}`)} crumbs={[{ name: 'Where we work', href: '/locations/' }, { name: l.city }]}>
+  <section class="hero">
+    <div class="container-x grid items-start gap-10 py-14 lg:grid-cols-[1.1fr_1fr]">
+      <div>
+        <p class="eyebrow">{l.country}</p>
+        <h1 class="h1 mt-3">ISO readiness & training in {l.city}</h1>
+        <p class="lead-text mt-5">{l.intro}</p>
+        <h2 class="mt-8 font-semibold">Sectors that commonly need this</h2>
+        <div class="mt-3 flex flex-wrap gap-2">{l.sectors.map((s) => <span class="rounded-sm bg-white px-3 py-1.5 text-sm font-semibold">{s}</span>)}</div>
+        <h2 class="mt-8 font-semibold">Delivery in {l.city}</h2>
+        <p class="mt-2 text-ink-soft">{l.delivery}</p>
+      </div>
+      <LeadForm heading={`Enquire from ${l.city}`} />
+    </div>
+  </section>
+  <section class="container-x py-14">
+    <h2 class="h2">Standards commonly needed in {l.city}</h2>
+    <div class="mt-6 grid gap-4 md:grid-cols-2">
+      {stds.map((s) => (
+        <a href={`/iso/${s.slug}/`} class="card transition hover:border-teal">
+          <p class="text-sm font-bold text-teal">{s.code}</p>
+          <p class="mt-1 font-semibold">{s.name}</p>
+          <p class="mt-2 text-sm leading-relaxed text-ink-soft">{regional(s)}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+  <CtaBand />
+</Base>

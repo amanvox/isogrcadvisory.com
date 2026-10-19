@@ -1,0 +1,52 @@
+---
+import { site } from '../data/site';
+import { launchedStandards } from '../data/standards';
+import { locations } from '../data/locations';
+const served = locations.filter((l) => (site.servedCities as readonly string[]).includes(l.slug));
+const year = new Date().getFullYear();
+---
+<footer class="border-t border-white/10 bg-night text-white/75">
+  <div class="container-x grid gap-10 py-14 md:grid-cols-4">
+    <div class="md:col-span-1">
+      <img src="/brand/logo-header-light.png" alt={site.name} width="462" height="112" class="h-12 w-auto" />
+      <p class="mt-4 text-sm">{site.tagline}.</p>
+      {site.showEmail && <p class="mt-4 text-sm"><a class="hover:text-white" href={`mailto:${site.contact.email}`}>{site.contact.email}</a></p>}
+      <p class="text-sm">UAE <a class="hover:text-white" href={`tel:${site.contact.phoneUAE}`}>{site.contact.phoneUAE}</a></p>
+      <p class="text-sm">KSA <a class="hover:text-white" href={`tel:${site.contact.phoneKSA}`}>{site.contact.phoneKSA}</a></p>
+    </div>
+    <div>
+      <p class="mb-3 text-sm font-bold text-white">ISO standards</p>
+      <ul class="space-y-1.5 text-sm">
+        {launchedStandards.slice(0, 8).map((s) => <li><a class="hover:text-white" href={`/iso/${s.slug}/`}>{s.code.split(':')[0]}</a></li>)}
+        <li><a class="hover:text-white" href="/iso/">All standards →</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="mb-3 text-sm font-bold text-white"><a href="/locations/" class="hover:underline">Where we work</a></p>
+      <ul class="space-y-1.5 text-sm">
+        {served.map((l) => <li><a class="hover:text-white" href={`/locations/${l.slug}/`}>{l.city}</a></li>)}
+      </ul>
+    </div>
+    <div>
+      <p class="mb-3 text-sm font-bold text-white">Services</p>
+      <ul class="space-y-1.5 text-sm">
+        <li><a class="hover:text-white" href="/iso/">ISO Advisory</a></li>
+        <li><a class="hover:text-white" href="/grc/">GRC Advisory</a></li>
+        <li><a class="hover:text-white" href="/compliance-software/">GRC software selection</a></li>
+        <li><a class="hover:text-white" href="/training/">Training</a></li>
+        <li><a class="hover:text-white" href="/workforce/">Workforce & L&D</a></li>
+        <li><a class="hover:text-white" href="/resources/iso-readiness-check/">ISO readiness check</a></li>
+        <li><a class="hover:text-white" href="/resources/grc-maturity-check/">GRC maturity check</a></li>
+        <li><a class="hover:text-white" href="/enquire/">Book a scoping call</a></li>
+        <li><a class="hover:text-white" href="/about/">About</a></li>
+        <li><a class="hover:text-white" href="/privacy/">Privacy notice</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-white/10">
+    <div class="container-x py-6 text-xs leading-relaxed text-white/60">
+      <p>{site.disclosure}</p>
+      <p class="mt-2">© {year} {site.name}. This is an independent advisory and training website and is not affiliated with or endorsed by ISO.</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,57 @@
+---
+import Base from '../../layouts/Base.astro';
+import { clip } from '../../lib/seo';
+import LeadForm from '../../components/LeadForm.astro';
+import Faq from '../../components/Faq.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { regulations, modules, type Regulation } from '../../data/grc';
+import { launchedStandards } from '../../data/standards';
+
+export function getStaticPaths() {
+  return regulations.map((r) => ({ params: { slug: r.slug }, props: { r } }));
+}
+const { r } = Astro.props as { r: Regulation };
+const stds = r.relatedStandards.map((s) => launchedStandards.find((x) => x.slug === s)).filter((x) => !!x);
+const mods = r.relatedModules.map((s) => modules.find((x) => x.slug === s)).filter((x) => !!x);
+const faqSchema = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: r.faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) };
+---
+<Base title={`${r.short} Compliance Guide`} description={clip(`What ${r.short} requires, who it applies to, and how to meet it alongside ISO standards: gap assessment, control mapping and evidence in ${r.country}.`)} schema={faqSchema} crumbs={[{ name: 'GRC Advisory', href: '/grc/' }, { name: r.short }]}>
+  <section class="hero">
+    <div class="container-x grid items-start gap-10 py-14 lg:grid-cols-[1.1fr_1fr]">
+      <div>
+        <p class="eyebrow">{r.country} · Regulation guide</p>
+        <h1 class="h1 mt-2">{r.name}</h1>
+        <p class="mt-4 text-[14px] text-ink-soft">Issued by {r.issuer}</p>
+        <p class="mt-5 bg-white p-4 text-[15px]"><strong>Applies to:</strong> {r.appliesTo}</p>
+        <div class="prose-x mt-6">{r.summary.map((p) => <p>{p}</p>)}</div>
+        <p class="text-xs text-ink-soft">General guidance, not legal advice. Always confirm scope and current requirements with the issuing authority.</p>
+      </div>
+      <LeadForm route="grc-consulting" heading={`Discuss ${r.short} with us`} sub="Gap assessment, control mapping or evidence tracking." />
+    </div>
+  </section>
+
+  {r.steps && (
+    <section class="night">
+      <div class="container-x py-16">
+        <p class="eyebrow">The path</p>
+        <h2 class="h2 mt-4">How organisations typically get there</h2>
+        <ol class="mt-10 grid gap-px border border-white/10 bg-white/10 md:grid-cols-2 lg:grid-cols-5">
+          {r.steps.map((st, i) => <li class="bg-night p-5"><span class="text-[13px] font-semibold tabular-nums text-brass-light">{String(i + 1).padStart(2, '0')}</span><p class="mt-2 text-[16px] font-medium text-white">{st.t}</p><p class="mt-2 text-[14px] leading-relaxed text-white/75">{st.d}</p></li>)}
+        </ol>
+      </div>
+    </section>
+  )}
+
+  <section class="container-x grid gap-10 py-14 lg:grid-cols-2">
+    <div>
+      <h2 class="h2">How we help</h2>
+      <ul class="mt-5 space-y-3">{r.howWeHelp.map((h) => <li class="card flex gap-3 p-4"><span class="text-teal">✓</span><span class="font-semibold">{h}</span></li>)}</ul>
+    </div>
+    <div class="space-y-8">
+      {stds.length > 0 && <div><h2 class="h2">Related ISO standards</h2><div class="mt-4 space-y-2">{stds.map((s) => <a class="card block p-4 transition hover:border-teal" href={`/iso/${s.slug}/`}><span class="text-sm font-bold text-teal">{s.code}</span> <span class="font-semibold">{s.name}</span></a>)}</div></div>}
+      {mods.length > 0 && <div><h2 class="h2">Related software guides</h2><div class="mt-4 space-y-2">{mods.map((m) => <a class="card block p-4 transition hover:border-teal" href={`/compliance-software/${m.slug}/`}><span class="font-semibold">{m.name}</span> <span class="text-sm text-ink-soft">— {m.short}</span></a>)}</div></div>}
+    </div>
+  </section>
+  <Faq items={r.faqs} title={`${r.short} questions`} />
+  <CtaBand title="Where does your programme stand?" text="The GRC maturity check takes three minutes and shows which areas to fix first." href="/resources/grc-maturity-check/" label="Take the check" />
+</Base>

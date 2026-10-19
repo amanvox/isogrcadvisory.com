@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { site } from '../data/site';
+const wa = `https://wa.me/${site.contact.whatsapp}`;
+---
+<Base title="Book a Scoping Call" description="Tell us about your ISO, training, GRC or workforce requirement in the UAE or Saudi Arabia and we’ll get back to you about the next step." noindex crumbs={[{ name: 'Book a scoping call' }]}>
+  <section class="hero">
+    <div class="container-x grid items-start gap-12 py-16 lg:grid-cols-[1fr_1.15fr]">
+      <div>
+        <p class="eyebrow">Book a scoping call</p>
+        <h1 class="h1 mt-5">Tell us what you need.</h1>
+        <p class="lead-text mt-6">Share the basics and we’ll get back to you about the next step. No obligation.</p>
+        <div class="mt-10 space-y-3 text-[15px]">
+          <p class="font-semibold">What happens next</p>
+          <ol class="list-decimal space-y-2 pl-5 text-ink-soft">
+            <li>We review your enquiry.</li>
+            <li>A short call to confirm scope and timing.</li>
+            <li>A written proposal with scope, approach and fees.</li>
+          </ol>
+          <p class="pt-5 text-ink-soft">Prefer to talk? <a class="font-semibold text-teal" href={wa} target="_blank" rel="noopener">WhatsApp</a> · <a class="font-semibold text-teal" href={`tel:${site.contact.phoneUAE}`}>UAE {site.contact.phoneUAE}</a> · <a class="font-semibold text-teal" href={`tel:${site.contact.phoneKSA}`}>KSA {site.contact.phoneKSA}</a></p>
+        </div>
+      </div>
+      <LeadForm />
+    </div>
+  </section>
+</Base>

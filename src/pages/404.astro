@@ -1,0 +1,10 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+---
+<Base title="Page not found" description="This page could not be found." noindex>
+  <PageHeader eyebrow="404" title="Page not found" />
+  <section class="container-x py-16">
+    <p class="lead-text">Try <a href="/iso/" class="text-teal underline">ISO Advisory</a>, <a href="/grc/" class="text-teal underline">GRC Advisory</a>, <a href="/training/" class="text-teal underline">Training</a>, or <a href="/enquire/" class="text-teal underline">tell us what you need</a>.</p>
+  </section>
+</Base>

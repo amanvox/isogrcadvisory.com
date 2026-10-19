@@ -1,0 +1,17 @@
+---
+import type { Crumb } from '../lib/seo';
+const { items } = Astro.props as { items: Crumb[] };
+const trail: Crumb[] = [{ name: 'Home', href: '/' }, ...items];
+---
+<nav aria-label="Breadcrumb" class="border-b border-white/10 bg-night">
+  <ol class="container-x flex flex-wrap items-center gap-x-2 gap-y-1 py-3 text-[13px] text-white/60">
+    {trail.map((c, i) => (
+      <li class="flex items-center gap-2">
+        {i > 0 && <span aria-hidden="true" class="text-white/30">/</span>}
+        {c.href && i < trail.length - 1
+          ? <a href={c.href} class="transition hover:text-white">{c.name}</a>
+          : <span aria-current="page" class="text-white/85">{c.name}</span>}
+      </li>
+    ))}
+  </ol>
+</nav>

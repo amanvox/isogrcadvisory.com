@@ -1,0 +1,70 @@
+@import "tailwindcss";
+@import "@fontsource-variable/archivo/standard.css";
+
+/* Direction: corporate and restrained. Blue-black "night" bands, paper-white sections,
+   large sentence-case headlines at medium weight, brass as the single warm accent,
+   hairline rules, square edges, one strong graphic (the PDCA ring). */
+@theme {
+  --font-sans: "Archivo Variable", "Helvetica Neue", Arial, ui-sans-serif, system-ui, sans-serif;
+  --color-ink: #0B1D30;
+  --color-ink-soft: #4E5967;
+  --color-night: #061A2E;
+  --color-night-2: #0C2540;
+  --color-paper: #F4F4F1;
+  --color-sand: #F4F4F1;
+  --color-line: #DCDDD8;
+  --color-teal: #0F7481;      /* accent on light backgrounds */
+  --color-teal-dark: #0B5C67;
+  --color-signal: #6CC9CC;    /* accent on dark backgrounds */
+  --color-gold: #B18844;      /* brass */
+  --color-brass-light: #D9BC82;
+  --color-slate: #7F9BC7;
+  --radius-sm: 1px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+  --radius-2xl: 2px;
+}
+
+html { scroll-behavior: smooth; }
+body { @apply bg-white text-ink antialiased; }
+
+@utility container-x { @apply mx-auto w-full max-w-6xl px-4 sm:px-6; }
+@utility btn { @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 text-[14px] font-semibold tracking-[0.01em] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold; }
+@utility btn-primary { @apply btn bg-teal text-white hover:bg-teal-dark; }
+@utility btn-ghost { @apply btn border border-current/40 bg-transparent hover:border-current; }
+@utility btn-gold { @apply btn bg-brass-light text-night hover:bg-gold hover:text-white; }
+@utility eyebrow { @apply text-[11px] font-semibold uppercase tracking-[0.2em] text-teal; }
+@utility h1 { @apply font-medium leading-[1.04] tracking-[-0.025em]; font-size: clamp(2.2rem, 4.2vw, 3.6rem); font-stretch: 104%; text-wrap: balance; }
+@utility h2 { @apply font-medium leading-[1.1] tracking-[-0.02em]; font-size: clamp(1.6rem, 2.6vw, 2.25rem); font-stretch: 104%; text-wrap: balance; }
+@utility lead-text { @apply text-[17px] leading-[1.7] text-ink-soft; }
+@utility card { @apply border border-line bg-white p-6; }
+@utility field { @apply w-full border border-ink/20 bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-teal focus:ring-2 focus:ring-teal/15; }
+@utility label { @apply mb-1.5 block text-[13px] font-semibold; }
+@utility link-arrow { @apply inline-flex items-center gap-2 border-b border-gold pb-1 text-[13px] font-semibold tracking-[0.02em]; }
+
+/* Edged tile on dark bands. Set --c per tile. */
+.tile { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: var(--color-night-2); border-left: 2px solid var(--c, var(--color-brass-light)); padding: 1.1rem 1.25rem; color: #fff; font-weight: 500; transition: background .2s; }
+.tile:hover { background: #12304F; }
+.tile small { display: block; font-weight: 400; color: #B4BDC9; font-size: 13px; margin-top: 3px; line-height: 1.45; }
+.tile .chev { color: var(--c, var(--color-brass-light)); flex-shrink: 0; transition: transform .2s; }
+.tile:hover .chev { transform: translateX(3px); }
+
+/* Dark hero band. Recolours the copy column; the lead form panel keeps its light styling. */
+.hero { background: var(--color-night); color: #fff; }
+.hero :is(.h1, h1):not(.form-panel *) { color: #fff; }
+.hero :is(.lead-text, .text-ink-soft, .prose-x p):not(.form-panel *) { color: #CFD6DF; }
+.hero .eyebrow:not(.form-panel *) { color: var(--color-brass-light); }
+.hero :is(.text-teal, a.text-teal):not(.form-panel *) { color: var(--color-signal); }
+.hero .bg-white:not(.form-panel):not(.form-panel *) { background: rgba(255,255,255,.06); color: #E2E6EB; border: 1px solid rgba(255,255,255,.1); }
+.night { background: var(--color-night); color: #fff; }
+.night .text-ink-soft { color: #B4BDC9; }
+.night .eyebrow { color: var(--color-brass-light); }
+
+.rule { height: 1px; background: currentColor; opacity: .14; }
+
+.prose-x p { @apply mb-4 leading-[1.75] text-ink-soft; }
+.prose-x h2 { @apply mt-10 mb-3 text-[1.35rem] font-medium tracking-[-0.015em]; }
+.prose-x ul { @apply mb-4 list-disc space-y-1.5 pl-5 text-ink-soft; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

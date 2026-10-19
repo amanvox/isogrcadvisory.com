@@ -1,0 +1,81 @@
+---
+import Base from '../../layouts/Base.astro';
+import LeadForm from '../../components/LeadForm.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { grcServices, regulations, modules } from '../../data/grc';
+---
+<Base title="GRC Advisory: Risk, Compliance & Audit, UAE & KSA" description="GRC framework design, risk management, NCA ECC, SAMA and UAE IA compliance mapping, internal audit and business continuity in the UAE and Saudi Arabia." crumbs={[{ name: 'GRC Advisory' }]}>
+  <section class="hero">
+    <div class="container-x grid items-start gap-10 py-14 lg:grid-cols-[1.1fr_1fr]">
+      <div>
+        <p class="eyebrow">GRC Advisory · Governance, risk & compliance</p>
+        <h1 class="h1 mt-3">One GRC programme for every regulator, standard and board</h1>
+        <p class="lead-text mt-5">Gulf organisations answer to several masters at once: national cybersecurity frameworks, sector regulators, ISO certificates, data protection law and their own boards. A joined-up GRC programme means one set of controls and one set of evidence, reported many ways.</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="/resources/grc-maturity-check/" class="btn-ghost">Take the GRC maturity check</a>
+          <a href="/compliance-software/" class="btn-ghost">Choosing GRC software</a>
+        </div>
+      </div>
+      <LeadForm route="grc-consulting" heading="Discuss a GRC requirement" sub="Framework design, regulatory mapping, ERM, internal audit or continuity." />
+    </div>
+  </section>
+
+  <section class="container-x py-14">
+    <h2 class="h2">Consulting services</h2>
+    <div class="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {grcServices.map((s) => (
+        <div class="card">
+          <p class="font-semibold">{s.t}</p>
+          <p class="mt-2 text-sm leading-relaxed text-ink-soft">{s.d}</p>
+          <ul class="mt-3 space-y-1 text-sm">{s.points.map((p) => <li class="flex gap-2"><span class="text-teal">✓</span>{p}</li>)}</ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="border-y border-line bg-white">
+    <div class="container-x py-14">
+      <h2 class="h2">Regulation guides</h2>
+      <p class="mt-2 text-ink-soft">Plain-English overviews of the Saudi and UAE frameworks organisations ask about most, and how to meet them without duplicating work.</p>
+      {(['Saudi Arabia', 'UAE'] as const).map((country) => (
+        <div class="mt-10">
+          <p class="text-[13px] font-semibold uppercase tracking-[0.16em] text-gold">{country}</p>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {regulations.filter((r) => r.country === country).map((r) => (
+              <a href={`/grc/${r.slug}/`} class="card transition hover:border-teal">
+                <p class="text-sm font-semibold text-teal">{r.short}</p>
+                <p class="mt-1 font-semibold">{r.name}</p>
+                <p class="mt-2 line-clamp-3 text-sm text-ink-soft">{r.appliesTo}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="night">
+    <div class="container-x grid items-center gap-10 py-16 lg:grid-cols-[1.2fr_1fr]">
+      <div>
+        <p class="eyebrow">Choosing software?</p>
+        <h2 class="h2 mt-4">Get help choosing and implementing GRC software.</h2>
+        <p class="mt-4 text-[16px] leading-relaxed text-white/80">If your framework already exists but lives in spreadsheets and email, the right software gives you one source of evidence, live dashboards and reports that build themselves. We help you define requirements, compare established platforms with scripted demos, and roll out the one you choose.</p>
+      </div>
+      <div class="flex flex-wrap gap-4 lg:justify-end">
+        <a href="/compliance-software/" class="btn-gold">Read the software guides <span aria-hidden="true">→</span></a>
+        <a href="/enquire/?route=compliance-software" class="btn-ghost text-white">Get help choosing</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-x py-14">
+    <h2 class="h2">Consulting, software, or both?</h2>
+    <div class="mt-6 grid gap-4 md:grid-cols-3">
+      <div class="card"><p class="font-semibold">Consulting first</p><p class="mt-2 text-sm text-ink-soft">No agreed framework, risk appetite or control set yet. Define it before buying tools.</p></div>
+      <div class="card"><p class="font-semibold">Software first</p><p class="mt-2 text-sm text-ink-soft">The framework exists but runs on spreadsheets and email. Move it onto one system.</p></div>
+      <div class="card"><p class="font-semibold">Both together</p><p class="mt-2 text-sm text-ink-soft">A new regulatory obligation and no system to evidence it. Design and configure in one programme.</p></div>
+    </div>
+    <p class="mt-6 text-sm text-ink-soft">Software guides: {modules.map((m, i) => <><a class="font-semibold text-teal hover:underline" href={`/compliance-software/${m.slug}/`}>{m.name}</a>{i < modules.length - 1 ? ' · ' : ''}</>)}</p>
+  </section>
+  <CtaBand title="Train the people who run it" text="Risk management, BIA, business continuity and ISO lead auditor courses for risk, compliance and audit teams." href="/training/#grc-bcm" label="GRC training" />
+</Base>

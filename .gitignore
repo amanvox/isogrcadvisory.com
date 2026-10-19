@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+.env
+.wrangler/
+# Partner's internal deck — keep out of the repo
+*.pdf
+# Private notes, partner routing and history backup — never pushed (public repo)
+internal/
+# Source artwork
+ISOGRCadvisory.png

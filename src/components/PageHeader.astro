@@ -1,0 +1,13 @@
+---
+// Standard dark header band for inner pages that don't need a lead form beside the title.
+interface Props { eyebrow?: string; title: string; lead?: string; narrow?: boolean }
+const { eyebrow, title, lead, narrow = false } = Astro.props;
+---
+<section class="hero">
+  <div class:list={['container-x py-14', narrow && 'max-w-3xl']}>
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <h1 class="h1 mt-3 max-w-3xl">{title}</h1>
+    {lead && <p class="lead-text mt-4 max-w-2xl">{lead}</p>}
+    <slot />
+  </div>
+</section>

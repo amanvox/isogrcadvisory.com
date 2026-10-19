@@ -1,0 +1,93 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import StickyBar from '../components/StickyBar.astro';
+import Consent from '../components/Consent.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { site } from '../data/site';
+import type { Crumb } from '../lib/seo';
+
+interface Props {
+  title: string;
+  description: string;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+  noindex?: boolean;
+  // Trail after Home; the last item is the current page. Omit on the home page and 404.
+  crumbs?: Crumb[];
+  ogType?: 'website' | 'article';
+}
+const { title, description, schema, noindex = false, crumbs, ogType = 'website' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+// Brand suffix only when the result stays within ~68 characters, so titles aren't truncated in results.
+const fullTitle = title.includes(site.name) || title.length > 49 ? title : `${title} | ${site.name}`;
+const orgSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: site.name,
+  url: site.url,
+  logo: new URL('/brand/mark-512.png', site.url).href,
+  description: site.tagline,
+  areaServed: [{ '@type': 'Country', name: 'United Arab Emirates' }, { '@type': 'Country', name: 'Saudi Arabia' }],
+  ...(site.showEmail ? { email: site.contact.email } : {}),
+  telephone: site.contact.phoneUAE,
+};
+const isHome = Astro.url.pathname === '/';
+const websiteSchema = { '@context': 'https://schema.org', '@type': 'WebSite', name: site.name, url: site.url, inLanguage: 'en' };
+const breadcrumbSchema = crumbs?.length ? {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [{ name: 'Home', href: '/' }, ...crumbs].map((c, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: c.name,
+    item: new URL(c.href ?? Astro.url.pathname, site.url).href,
+  })),
+} : null;
+const ogImage = new URL('/brand/og.png', site.url).href;
+const schemas = [orgSchema, ...(isHome ? [websiteSchema] : []), ...(breadcrumbSchema ? [breadcrumbSchema] : []), ...(schema ? (Array.isArray(schema) ? schema : [schema]) : [])];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+    <meta name="theme-color" content="#061A2E" />
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={site.name} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+    {schemas.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
+  </head>
+  <body class="flex min-h-screen flex-col pb-16 md:pb-0">
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2">Skip to content</a>
+    <Header />
+    {crumbs?.length ? <Breadcrumbs items={crumbs} /> : null}
+    <main id="main" class="flex-1"><slot /></main>
+    <Footer />
+    <StickyBar />
+    <Consent />
+    <script>
+      import { captureAttribution } from '../scripts/lead';
+      captureAttribution();
+    </script>
+  </body>
+</html>

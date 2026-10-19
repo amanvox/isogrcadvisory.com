@@ -1,0 +1,80 @@
+---
+import Base from '../../layouts/Base.astro';
+import { clip } from '../../lib/seo';
+import LeadForm from '../../components/LeadForm.astro';
+import Faq from '../../components/Faq.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { launchedStandards, outcomeLabel, type Standard } from '../../data/standards';
+import { locations } from '../../data/locations';
+
+export function getStaticPaths() {
+  return launchedStandards.map((s) => ({ params: { slug: s.slug }, props: { s } }));
+}
+const { s } = Astro.props as { s: Standard };
+const short = s.code.split(':')[0];
+const pageTitle = `${short} ${{ certification: 'Certification Readiness', accreditation: 'Accreditation Readiness', guidance: 'Implementation Support' }[s.outcome]} in UAE & KSA`;
+const cities = locations.filter((l) => l.focusStandards.includes(s.slug));
+
+const steps = s.outcome === 'accreditation'
+  ? ['Gap assessment against ISO/IEC 17025 technical and management requirements', 'Method validation, measurement uncertainty and quality procedures', 'Staff competence and impartiality records', 'Internal audit and management review', 'Application to the national accreditation body and assessment support']
+  : s.outcome === 'guidance'
+  ? ['Current-state review against the guidance', 'Framework, roles and policy design', 'Process and tool roll-out', 'Training for owners and users', 'Reporting and continual improvement cycle']
+  : ['Gap assessment and scope definition', 'Policies, processes and documented information', 'Implementation support and awareness training', 'Internal audit and management review', 'Certification audit preparation with your chosen accredited certification body'];
+
+const baseFaqs = [
+  { q: `Who issues the ${short} certificate?`, a: s.outcome === 'certification' ? `An independent certification body accredited for ${short}. Preparation, training and advisory are deliberately kept separate from certification so the audit stays impartial.` : s.outcome === 'accreditation' ? 'Laboratories are accredited by a national accreditation body — EIAC in the UAE and SAAC in Saudi Arabia.' : `${short} is a guidance standard, so organisations implement it rather than certify against it.` },
+  { q: `Can our team be trained on ${short}?`, a: s.courses.length ? `Yes — options include ${s.courses.join(', ')}. Public, virtual and in-house formats can be arranged; ask for current dates and fees.` : 'Awareness and implementation training can be built into the programme; ask about an in-house session.' },
+  ...s.faqs,
+];
+const faqSchema = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: baseFaqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) };
+---
+<Base title={pageTitle} description={clip(`${s.code} readiness, implementation support and ${short} auditor training for organisations in the UAE and Saudi Arabia. ${s.summary}`)} schema={faqSchema} crumbs={[{ name: 'ISO Advisory', href: '/iso/' }, { name: short }]}>
+  <section class="hero">
+    <div class="container-x grid items-start gap-10 py-14 lg:grid-cols-[1.1fr_1fr]">
+      <div>
+        <p class="eyebrow">{s.code}</p>
+        <h1 class="h1 mt-2">{short}<span class="mt-3 block text-[0.42em] leading-snug tracking-[-0.01em] text-white/75">{s.name} in the UAE &amp; Saudi Arabia</span></h1>
+        <p class="lead-text mt-5">{s.summary}</p>
+        <p class="mt-4 inline-block rounded-sm bg-white px-3 py-1 text-xs font-bold text-ink-soft">{outcomeLabel[s.outcome]}</p>
+        <h2 class="mt-8 font-semibold">Typically needed by</h2>
+        <ul class="mt-3 space-y-2">{s.whoNeedsIt.map((w) => <li class="flex gap-2"><span class="text-teal">✓</span>{w}</li>)}</ul>
+      </div>
+      <LeadForm route="iso-consulting" standard={s.slug} heading={`Scope your ${short} project`} />
+    </div>
+  </section>
+
+  <section class="container-x grid gap-4 py-14 md:grid-cols-2">
+    <div class="card"><p class="eyebrow">Saudi Arabia</p><p class="mt-2 leading-relaxed text-ink-soft">{s.regionalDrivers.ksa}</p></div>
+    <div class="card"><p class="eyebrow">United Arab Emirates</p><p class="mt-2 leading-relaxed text-ink-soft">{s.regionalDrivers.uae}</p></div>
+  </section>
+
+  <section class="container-x py-6">
+    <h2 class="h2">What the engagement looks like</h2>
+    <ol class="mt-6 grid gap-3 md:grid-cols-5">
+      {steps.map((st, i) => <li class="card p-5"><span class="text-sm font-semibold text-gold">0{i + 1}</span><p class="mt-1 text-sm font-semibold">{st}</p></li>)}
+    </ol>
+    <p class="mt-4 text-sm text-ink-soft">Timelines depend on size, sites and existing documentation — you get a realistic plan after scoping, not a one-size promise.</p>
+  </section>
+
+  {s.courses.length > 0 && (
+    <section class="container-x py-12">
+      <h2 class="h2">{short} training</h2>
+      <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {s.courses.map((c) => (
+          <a href={`/enquire/?route=iso-training&course=${encodeURIComponent(c)}`} class="card p-5 transition hover:border-teal">
+            <p class="font-bold">{c}</p><p class="mt-2 text-sm font-bold text-teal">Get dates & fees →</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {cities.length > 0 && (
+    <section class="container-x py-6">
+      <p class="text-sm text-ink-soft">Commonly needed in: {cities.map((c, i) => <><a class="font-semibold text-teal" href={`/locations/${c.slug}/`}>{c.city}</a>{i < cities.length - 1 ? ', ' : ''}</>)}</p>
+    </section>
+  )}
+
+  <Faq items={baseFaqs} title={`${short} questions`} />
+  <CtaBand title={`Start with a ${short} readiness review`} href={`/resources/iso-readiness-check/?standard=${encodeURIComponent(short)}`} label="Take the readiness check" text="Seven questions, two minutes — see where you stand before the first call." />
+</Base>

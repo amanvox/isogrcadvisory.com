@@ -1,0 +1,210 @@
+---
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+import PdcaRing from '../components/PdcaRing.astro';
+import HeroSlides from '../components/HeroSlides.astro';
+import CertExplainer from '../components/CertExplainer.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Faq from '../components/Faq.astro';
+import { site } from '../data/site';
+import { launchedStandards } from '../data/standards';
+import { locations } from '../data/locations';
+import { regulations } from '../data/grc';
+
+const served = locations.filter((l) => (site.servedCities as readonly string[]).includes(l.slug));
+const featured = ['iso-9001', 'iso-27001', 'iso-22301', 'iso-42001', 'iso-14001', 'iso-45001'].map((s) => launchedStandards.find((x) => x.slug === s)!).filter(Boolean);
+
+const services = [
+  { t: 'ISO readiness & implementation', s: 'Gap assessment through to certification audit', href: '/iso/', c: 'var(--color-signal)' },
+  { t: 'ISO auditor training', s: 'Internal and lead auditor, public or in-house', href: '/training/', c: 'var(--color-signal)' },
+  { t: 'GRC consulting', s: 'Frameworks, ERM, regulatory mapping, internal audit', href: '/grc/', c: 'var(--color-brass-light)' },
+  { t: 'GRC software selection', s: 'Choose and implement the right risk, audit and compliance software', href: '/compliance-software/', c: 'var(--color-brass-light)' },
+  { t: 'Workforce & L&D', s: 'Academies, assessments, coaching, AI capability', href: '/workforce/', c: 'var(--color-slate)' },
+  { t: 'Professional training', s: 'Risk, BCM, Lean, PMP, AI, HSE, leadership', href: '/training/#grc-bcm', c: 'var(--color-slate)' },
+];
+
+const principles = [
+  { t: 'Scoped before it is sold', d: 'Every engagement starts with a short scoping call, so the proposal reflects your sites, standards and deadline rather than a package.', c: ['#6FCFC2', '#2E9F92'] },
+  { t: 'Clear about certification', d: 'Preparation and certification are kept separate. Your certificate comes from an independent, accredited certification body.', c: ['#D9BC82', '#B8924A'] },
+  { t: 'Built for both markets', d: 'Delivery in the UAE and Saudi Arabia, with national frameworks such as NCA ECC, SAMA, PDPL, UAE IA and NCEMA 7000 in view.', c: ['#7F9BC7', '#3E5C8C'] },
+];
+
+const faqs = [
+  { q: 'Who carries out the work?', a: 'ISO GRC Advisory scopes your requirement and arranges delivery by qualified consultants, auditors and trainers suited to it. You’ll know who is delivering, and on what terms, before you commit.' },
+  { q: 'Do you cover both the UAE and Saudi Arabia?', a: 'Yes. Consulting and in-house training can be delivered at your premises in either country, and many courses are also available virtually.' },
+  { q: 'How much does ISO certification cost?', a: 'It depends on your size, number of sites, the standard and how much is already in place. The certification body’s audit fee is separate from preparation. A scoping call gives you a quote for your actual scope.' },
+  { q: 'Can you guarantee we will pass the certification audit?', a: 'No honest adviser can guarantee an independent audit outcome. Good preparation makes sure your system genuinely meets the standard and that your team can show the evidence.' },
+];
+---
+<Base title={`${site.name} | ISO, GRC & Training in UAE & Saudi Arabia`} description="ISO certification readiness, GRC advisory and ISO auditor training for organisations in the UAE and Saudi Arabia. Book a scoping call." schema={{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }}>
+
+  <!-- Hero -->
+  <section class="hero relative isolate overflow-hidden">
+    <HeroSlides />
+    <div class="container-x relative z-[1] pt-24 pb-16 md:pt-32 md:pb-20">
+      <div class="max-w-3xl">
+        <p class="eyebrow">UAE &amp; Saudi Arabia</p>
+        <h1 class="h1 mt-6">ISO readiness, auditor training and compliance capability for the UAE and Saudi Arabia.</h1>
+        <p class="lead-text mt-6 max-w-2xl">We help organisations prepare for ISO certification, train internal and lead auditors, and build the workforce capability to keep management systems working long after the audit.</p>
+        <div class="mt-9 flex flex-wrap items-center gap-6">
+          <a href="/enquire/" class="btn-gold">Book a scoping call <span aria-hidden="true">→</span></a>
+          <a href="/resources/iso-readiness-check/" class="link-arrow text-white">Take the 2-minute readiness check</a>
+        </div>
+      </div>
+      <div class="mt-16 grid gap-px border border-white/15 bg-white/15 sm:grid-cols-2 lg:grid-cols-4">
+        {(site.proof ? [{ k: site.proof.stat, v: site.proof.text }] : []).concat([
+          { k: `${launchedStandards.length} ISO standards`, v: 'Readiness and auditor training' },
+          { k: `${regulations.length} regulation guides`, v: 'Saudi and UAE cybersecurity, data protection and continuity frameworks' },
+          { k: 'Public, virtual or in-house', v: 'Training formats to suit your team' },
+          { k: 'UAE & Saudi Arabia', v: 'One point of contact for both markets' },
+        ]).slice(0, 4).map((x) => (
+          <div class="bg-night/80 px-5 py-5 backdrop-blur-sm">
+            <p class="text-[16px] font-semibold text-white">{x.k}</p>
+            <p class="mt-1 text-[13.5px] leading-snug text-white/75">{x.v}</p>
+          </div>
+        ))}
+      </div>
+      {/* TODO: add one approved proof point via site.proof in src/data/site.ts — it replaces the first tile. */}
+      <div class="mt-8 flex flex-wrap items-center gap-x-7 gap-y-2 text-[13.5px] text-white/80">
+        <span class="font-semibold text-white">Serving</span>
+        {served.map((l) => <a href={`/locations/${l.slug}/`} class="underline-offset-4 transition hover:text-white hover:underline">{l.city}</a>)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Positioning -->
+  <section class="bg-paper">
+    <div class="container-x grid gap-10 py-20 lg:grid-cols-[1fr_1.2fr]">
+      <h2 class="h2">Regulators, customers and boards ask for proof. We help you build it once.</h2>
+      <div>
+        <p class="lead-text">Gulf organisations answer to several requirements at the same time: tender clauses, ISO certificates, national frameworks and their own governance. Treated separately, each one becomes its own project. Treated together, they share one management system, one set of controls and one body of evidence.</p>
+        <a href="/grc/" class="link-arrow mt-6 text-ink">How a joined-up programme works</a>
+      </div>
+    </div>
+    <div class="container-x grid gap-10 pb-20 md:grid-cols-3">
+      {principles.map((p) => (
+        <div>
+          <span class="flex gap-1.5" aria-hidden="true">{p.c.map((c) => <span class="inline-block h-2.5 w-2.5 rounded-sm" style={`background:${c}`} />)}</span>
+          <p class="mt-4 text-[17px] font-semibold">{p.t}</p>
+          <p class="mt-2 text-[15px] leading-relaxed text-ink-soft">{p.d}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="night">
+    <div class="container-x py-20">
+      <div class="grid gap-6 lg:grid-cols-[1fr_1.4fr] lg:items-end">
+        <div>
+          <p class="eyebrow">What we help with</p>
+          <h2 class="h2 mt-4">Six ways to start, one point of contact.</h2>
+        </div>
+        <p class="text-[16px] leading-relaxed text-white/60">Choose the area closest to your requirement. If it spans several, the scoping call brings them together into one plan.</p>
+      </div>
+      <div class="mt-12 grid gap-3 md:grid-cols-2">
+        {services.map((s) => (
+          <a href={s.href} class="tile" style={`--c:${s.c}`}>
+            <span>{s.t}<small>{s.s}</small></span>
+            <span class="chev" aria-hidden="true">→</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Standards -->
+  <section class="container-x py-20">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div><p class="eyebrow">Common starting points</p><h2 class="h2 mt-4">ISO standards we prepare organisations for</h2></div>
+      <a href="/iso/" class="link-arrow text-ink">All {launchedStandards.length} standards</a>
+    </div>
+    <div class="mt-10 grid border-t border-l border-line sm:grid-cols-2 lg:grid-cols-3">
+      {featured.map((s) => (
+        <a href={`/iso/${s.slug}/`} class="group border-r border-b border-line p-7 transition hover:bg-paper">
+          <p class="text-[13px] font-semibold tracking-[0.04em] text-teal">{s.code}</p>
+          <p class="mt-2 text-[18px] font-medium leading-snug">{s.name}</p>
+          <p class="mt-3 line-clamp-3 text-[14px] leading-relaxed text-ink-soft">{s.summary}</p>
+          <p class="mt-5 text-[13px] font-semibold text-ink/70 transition group-hover:text-teal">Read more →</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="bg-paper">
+    <div class="container-x py-20">
+      <p class="eyebrow">How it works</p>
+      <h2 class="h2 mt-4 max-w-2xl">From first call to certification audit, in four steps.</h2>
+      <ol class="mt-12 grid gap-10 md:grid-cols-4">
+        {[
+          ['Scope', 'A short call on the trigger, timeline, sites and what already exists.'],
+          ['Plan', 'A written proposal with scope, approach, timeline and fees.'],
+          ['Deliver', 'Gap assessment, documentation, training, internal audit and management review.'],
+          ['Certify', 'You appoint an accredited certification body for the independent audit.'],
+        ].map(([t, d], i) => (
+          <li class="border-t border-ink/15 pt-5">
+            <span class="text-[13px] font-semibold tabular-nums text-gold">0{i + 1}</span>
+            <p class="mt-2 text-[18px] font-medium">{t}</p>
+            <p class="mt-2 text-[14.5px] leading-relaxed text-ink-soft">{d}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Improvement cycle -->
+  <section class="night">
+    <div class="container-x grid items-center gap-12 py-20 lg:grid-cols-[1fr_1.1fr]">
+      <div>
+        <p class="eyebrow">The approach</p>
+        <h2 class="h2 mt-4">Every ISO management system runs on the same cycle.</h2>
+        <p class="mt-5 text-[16px] leading-relaxed text-white/80">Plan, Do, Check, Act. Whether the standard is quality, information security, continuity or AI, the work is the same shape: understand the context and risks, put controls in place, check they work, and improve. Building to that cycle once means the next standard is an extension, not a new project.</p>
+        <a href="/iso/" class="link-arrow mt-7 text-white">Compare ISO standards</a>
+      </div>
+      <div class="flex justify-center lg:justify-end"><PdcaRing /></div>
+    </div>
+  </section>
+
+  <!-- Regulations -->
+  <section class="container-x py-20">
+    <div class="grid gap-10 lg:grid-cols-[1fr_1.4fr]">
+      <div>
+        <p class="eyebrow">Regulation guides</p>
+        <h2 class="h2 mt-4">National frameworks, explained plainly.</h2>
+        <p class="mt-4 text-[15.5px] leading-relaxed text-ink-soft">Who each framework applies to, how it relates to ISO standards, and how to meet it without duplicating work.</p>
+        <a href="/grc/" class="link-arrow mt-6 text-ink">All {regulations.length} regulation guides</a>
+      </div>
+      <div class="border-t border-line">
+        {regulations.filter((r) => ['nca-ecc', 'aramco-ccc', 'saudi-pdpl', 'sama-cybersecurity-framework', 'uae-ia-standards', 'ncema-7000'].includes(r.slug)).map((r) => (
+          <a href={`/grc/${r.slug}/`} class="group flex items-center justify-between gap-6 border-b border-line py-5">
+            <span><span class="block text-[17px] font-medium transition group-hover:text-teal">{r.name}</span><span class="text-[13px] text-ink-soft">{r.country}</span></span>
+            <span class="text-ink/40 transition group-hover:translate-x-1 group-hover:text-teal" aria-hidden="true">→</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CertExplainer />
+
+  <!-- Enquiry -->
+  <section class="hero" id="start">
+    <div class="container-x grid items-start gap-12 py-20 lg:grid-cols-[1fr_1fr]">
+      <div>
+        <p class="eyebrow">Start here</p>
+        <h2 class="h2 mt-4 text-white">Tell us what you need. We’ll get back to you about the next step.</h2>
+        <p class="lead-text mt-5 max-w-lg">The first step takes under a minute. Everything after that is optional.</p>
+        <dl class="mt-10 grid max-w-md gap-6 text-[14px]">
+          <div><dt class="text-white/50">UAE</dt><dd class="mt-1 text-[17px] text-white">{site.contact.phoneUAE}</dd></div>
+          <div><dt class="text-white/50">Saudi Arabia</dt><dd class="mt-1 text-[17px] text-white">{site.contact.phoneKSA}</dd></div>
+          {site.showEmail && <div><dt class="text-white/50">Email</dt><dd class="mt-1 text-[17px] text-white">{site.contact.email}</dd></div>}
+        </dl>
+      </div>
+      <LeadForm />
+    </div>
+  </section>
+
+  <Faq items={faqs} />
+  <CtaBand />
+</Base>

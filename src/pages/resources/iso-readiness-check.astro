@@ -1,0 +1,99 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { launchedStandards } from '../../data/standards';
+
+const questions = [
+  { area: 'Scope & leadership', q: 'Have you defined which sites and activities are in scope, and named someone with the authority and time to lead the work?' },
+  { area: 'Risk', q: 'Do you assess risks and opportunities in a documented, repeatable way?' },
+  { area: 'Processes', q: 'Are your core processes documented and actually followed in practice?' },
+  { area: 'Requirements', q: 'Do you keep a register of the legal, regulatory and customer requirements that apply to you?' },
+  { area: 'Documents & records', q: 'Is there one controlled place for current documents and records, with version control?' },
+  { area: 'Internal audit', q: 'Have you run an internal audit against the standard in the last 12 months?' },
+  { area: 'Improvement', q: 'Do you track nonconformities and corrective actions to closure, and hold management reviews?' },
+];
+---
+<Base title="ISO Readiness Check: Free Self-Assessment" description="Answer seven questions to see how close your organisation is to ISO certification readiness, with the gaps to close first. Free, instant and no sign-up." crumbs={[{ name: 'Resources', href: '/resources/' }, { name: 'ISO readiness check' }]}>
+  <PageHeader narrow eyebrow="Free self-assessment" title="How ready are you for an ISO audit?" lead="Seven questions, about two minutes. Your result appears instantly — no email needed to see it." />
+  <section class="container-x max-w-3xl pb-14 pt-4">
+
+    <form id="rc" class="mt-8 space-y-4">
+      <div>
+        <label class="label" for="rc-std">Standard you’re working towards</label>
+        <select id="rc-std" name="standard" class="field">
+          {launchedStandards.filter((s) => s.outcome !== 'guidance').map((s) => <option value={s.code.split(':')[0]}>{s.code.split(':')[0]} — {s.name}</option>)}
+          <option value="Not sure">Not sure yet</option>
+        </select>
+      </div>
+      {questions.map((item, i) => (
+        <fieldset class="card p-5" data-area={item.area}>
+          <legend class="sr-only">{item.area}</legend>
+          <p class="text-xs font-bold uppercase tracking-wider text-teal">{i + 1}. {item.area}</p>
+          <p class="mt-1 font-semibold">{item.q}</p>
+          <div class="mt-3 flex flex-wrap gap-2 text-sm">
+            {[['2', 'Yes'], ['1', 'Partly'], ['0', 'No / not sure']].map(([v, l]) => (
+              <label class="flex cursor-pointer items-center gap-2 rounded-lg border border-ink/20 px-3 py-1.5 has-[:checked]:border-teal has-[:checked]:bg-teal/5">
+                <input type="radio" name={`q${i}`} value={v} required class="accent-teal" /> {l}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ))}
+      <button class="btn-primary w-full">See my result</button>
+    </form>
+
+    <div id="rc-result" class="mt-10 hidden scroll-mt-24">
+      <div class="rounded-2xl bg-ink p-8 text-white">
+        <p class="text-sm font-bold uppercase tracking-wider text-gold">Your readiness</p>
+        <p class="mt-2 text-5xl font-semibold"><span data-score></span><span class="text-2xl">/100</span></p>
+        <p class="mt-3 text-lg font-bold" data-band></p>
+        <p class="mt-2 text-white/75" data-advice></p>
+      </div>
+      <div class="card mt-4">
+        <p class="font-semibold">Gaps to close first</p>
+        <ul class="mt-3 list-disc space-y-1.5 pl-5 text-ink-soft" data-gaps></ul>
+      </div>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a data-cta class="btn-primary" href="/enquire/?route=iso-consulting">Discuss my result on a call</a>
+        <a href="/training/" class="btn-ghost">Train an internal auditor</a>
+      </div>
+      <p class="mt-4 text-xs text-ink-soft">This is a self-assessment to guide a conversation, not an audit or a prediction of a certification outcome.</p>
+    </div>
+  </section>
+</Base>
+<script>
+  import { recordReadiness, track } from '../../scripts/lead';
+  const form = document.getElementById('rc') as HTMLFormElement;
+  const qs = new URLSearchParams(location.search).get('standard');
+  if (qs) (form.elements.namedItem('standard') as HTMLSelectElement).value = qs;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const sets = [...form.querySelectorAll<HTMLElement>('fieldset[data-area]')];
+    let total = 0;
+    const gaps: string[] = [];
+    sets.forEach((f, i) => {
+      const v = Number(fd.get(`q${i}`) ?? 0);
+      total += v;
+      if (v < 2) gaps.push(f.dataset.area!);
+    });
+    const score = Math.round((total / (sets.length * 2)) * 100);
+    const std = String(fd.get('standard'));
+    const [band, advice] = score >= 75
+      ? ['Close to audit-ready', 'Focus on evidence: a full internal audit and management review, then choose a certification body.']
+      : score >= 40
+      ? ['Foundations in place', 'A structured gap assessment will turn partial practices into a system an auditor can verify.']
+      : ['Early stage', 'Start with scope, leadership ownership and a gap assessment — then a phased implementation plan.'];
+    const res = document.getElementById('rc-result')!;
+    res.querySelector('[data-score]')!.textContent = String(score);
+    res.querySelector('[data-band]')!.textContent = band;
+    res.querySelector('[data-advice]')!.textContent = advice;
+    res.querySelector('[data-gaps]')!.innerHTML = (gaps.length ? gaps : ['No major gaps self-reported — confirm with an internal audit.']).map((g) => `<li>${g}</li>`).join('');
+    (res.querySelector('[data-cta]') as HTMLAnchorElement).href = `/enquire/?route=iso-consulting&score=${score}&standard=${encodeURIComponent(std)}`;
+    res.classList.remove('hidden');
+    res.scrollIntoView({ behavior: 'smooth' });
+    recordReadiness(score, std);
+    track('readiness_complete', { score, standard: std });
+  });
+</script>

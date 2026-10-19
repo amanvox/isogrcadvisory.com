@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+const blocks = [
+  { t: 'Corporate academy design', d: 'Turn a training department into a structured academy: curriculum architecture, governance, learning platforms and — where it fits — ISO 21001 or ISO 29993 quality frameworks.' },
+  { t: 'Assessments & succession', d: 'Psychometric, cognitive, technical and leadership assessments, 360° feedback and assessment centres that feed succession planning and development plans.' },
+  { t: 'Coaching programmes', d: 'Executive, leadership and new-manager coaching, national-talent development journeys, and AI-supported coaching that extends support beyond the senior tier.' },
+  { t: 'AI capability building', d: 'Organisation-wide AI literacy segmented by audience — leaders, data stewards, digital teams and everyone else — with responsible-use guidance.' },
+  { t: 'Learning content & technology', d: 'SCORM e-learning, incident recreations, 2D/3D induction videos, VR/AR simulations and short-form video learning that plugs into your LMS.' },
+  { t: 'HR & L&D standards', d: 'Competency frameworks, workforce planning, human capital reporting and diversity & inclusion aligned with the ISO 30400 family of HR standards.' },
+];
+---
+<Base title="Workforce & L&D: Corporate Academies & Coaching" description="Corporate academy design, leadership assessment, coaching, AI capability building, e-learning and HR standards for organisations in the UAE and Saudi Arabia." crumbs={[{ name: 'Training', href: '/training/' }, { name: 'Workforce & L&D' }]}>
+  <section class="hero">
+    <div class="container-x grid items-start gap-10 py-14 lg:grid-cols-[1.1fr_1fr]">
+      <div>
+        <p class="eyebrow">Training · Workforce & L&D</p>
+        <h1 class="h1 mt-3">Build the capability your strategy depends on</h1>
+        <p class="lead-text mt-5">For HR and L&D leaders who need more than a course list: academies, assessments, coaching and learning content designed around a business outcome — localisation targets, leadership pipeline, AI readiness or service quality.</p>
+        <p class="mt-6 text-sm text-ink-soft">Common starting points: a leadership pipeline gap, an Emiratisation or Saudisation development target, an AI rollout without the skills behind it, or an academy that needs structure and recognition.</p>
+      </div>
+      <LeadForm route="workforce-ld" heading="Discuss a capability challenge" />
+    </div>
+  </section>
+  <section class="container-x py-14">
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {blocks.map((b) => <div class="card"><p class="font-semibold">{b.t}</p><p class="mt-2 text-sm leading-relaxed text-ink-soft">{b.d}</p></div>)}
+    </div>
+  </section>
+  <section class="container-x py-6">
+    <h2 class="h2">How programmes are shaped</h2>
+    <ol class="mt-6 grid gap-3 md:grid-cols-4">
+      {['Clarify the outcome and who it is for', 'Diagnose with assessments or a needs analysis', 'Design the blend: classroom, coaching, digital', 'Measure and report back to the business'].map((s, i) => <li class="card p-5"><span class="text-sm font-semibold text-gold">0{i + 1}</span><p class="mt-1 text-sm font-semibold">{s}</p></li>)}
+    </ol>
+  </section>
+  <CtaBand />
+</Base>

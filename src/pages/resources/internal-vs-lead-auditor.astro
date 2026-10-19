@@ -1,0 +1,30 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import CtaBand from '../../components/CtaBand.astro';
+const rows = [
+  ['Purpose', 'Audit your own organisation’s system', 'Plan and lead audits — internal, supplier or (with further steps) third-party'],
+  ['Typical length', 'About 2 days', 'About 5 days, usually with an exam'],
+  ['Who it suits', 'Process owners, quality/IMS team members, department representatives', 'Quality/IMS managers, consultants, supplier auditors, aspiring certification auditors'],
+  ['Prerequisite', 'Basic knowledge of the standard helps', 'Good knowledge of the standard; foundation course recommended'],
+];
+---
+<Base title="Internal Auditor vs Lead Auditor: Which Course?" description="Compare ISO internal auditor and lead auditor training — purpose, length, who it suits and prerequisites — for professionals in the UAE and Saudi Arabia." ogType="article" crumbs={[{ name: 'Resources', href: '/resources/' }, { name: 'Internal vs lead auditor' }]}>
+  <PageHeader narrow eyebrow="Guide" title="Internal auditor or lead auditor?" />
+  <article class="container-x max-w-3xl py-12">
+    <div class="prose-x"><p>Both courses teach you to audit against an ISO standard. The difference is the role you are preparing for.</p></div>
+    <div class="mt-6 overflow-x-auto rounded-2xl border border-line">
+      <table class="w-full min-w-[560px] text-left text-sm">
+        <thead class="bg-sand"><tr><th class="p-4"></th><th class="p-4">Internal auditor</th><th class="p-4">Lead auditor</th></tr></thead>
+        <tbody>{rows.map(([a, b, c]) => <tr class="border-t border-line"><th class="p-4 font-bold">{a}</th><td class="p-4 text-ink-soft">{b}</td><td class="p-4 text-ink-soft">{c}</td></tr>)}</tbody>
+      </table>
+    </div>
+    <div class="prose-x mt-10">
+      <h2>A rule of thumb</h2>
+      <p>If you need people to keep your own system healthy, train several internal auditors across departments. If you need someone to own the audit programme, audit suppliers or move toward a career in certification auditing, choose lead auditor.</p>
+      <h2>Check the credential</h2>
+      <p>Lead auditor courses differ in who recognises them. Before booking, confirm which body accredits or awards the certificate and whether that matters for your goal. We state it for each course when you request dates.</p>
+    </div>
+  </article>
+  <CtaBand title="Get dates for either course" text="Tell us the standard and how many people — we’ll send current public dates and in-house options." href="/enquire/?route=iso-training" label="Request dates & fees" />
+</Base>

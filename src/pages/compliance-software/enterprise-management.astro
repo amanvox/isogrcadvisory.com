@@ -1,0 +1,90 @@
+---
+import Base from '../../layouts/Base.astro';
+import LeadForm from '../../components/LeadForm.astro';
+import Faq from '../../components/Faq.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { enterpriseSuite, modules, regionalCriteria } from '../../data/grc';
+
+const faqs = [
+  { q: 'What is an enterprise management system?', a: 'Software that runs an organisation’s core management processes, including structure, people, strategy, risk, compliance, audit and continuity, on one platform, with shared data and reporting across sites and departments.' },
+  { q: 'Integrated suite or separate best-of-breed tools?', a: 'An integrated suite gives one data model and fewer integrations. Separate specialist tools can go deeper in one area. The right answer depends on how connected your processes are and how many areas you need now.' },
+  { q: 'Do we need every component on day one?', a: 'No. Most organisations start with the areas under the most pressure and switch on further components later. Check that a platform lets you do that without re-implementing.' },
+  { q: 'Do you sell an enterprise management system?', a: 'No. We help you decide whether an integrated system is right for you, compare options, and plan the rollout.' },
+];
+---
+<Base title="Integrated Enterprise Management Systems Guide" description="When one connected system for strategy, people, risk, compliance, audit and continuity makes sense, and how to evaluate one in the UAE and Saudi Arabia." crumbs={[{ name: 'GRC Advisory', href: '/grc/' }, { name: 'Software selection', href: '/compliance-software/' }, { name: 'Integrated enterprise management' }]}>
+  <section class="hero">
+    <div class="container-x grid items-start gap-10 py-16 lg:grid-cols-[1.1fr_1fr]">
+      <div>
+        <p class="eyebrow">Buyer’s guide</p>
+        <h1 class="h1 mt-3">Integrated enterprise management systems</h1>
+        <p class="lead-text mt-6">{enterpriseSuite.intro}</p>
+        <p class="mt-6 text-[14px] leading-relaxed text-ink-soft">We don’t build or sell software. We help you decide whether an integrated system fits, and choose and implement one.</p>
+      </div>
+      <LeadForm route="compliance-software" heading="Talk through an integrated system" sub="Tell us which areas you want to connect. We’ll get back to you about the next step." />
+    </div>
+  </section>
+
+  <section class="container-x py-20">
+    <p class="eyebrow">What an integrated system connects</p>
+    <h2 class="h2 mt-4 max-w-2xl">Six areas that usually live in separate tools.</h2>
+    <div class="mt-12 grid gap-x-10 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
+      {enterpriseSuite.pillars.map((p) => (
+        <div class="border-t border-ink/15 pt-5">
+          <p class="text-[18px] font-medium">{p.t}</p>
+          <p class="mt-2 text-[15px] leading-relaxed text-ink-soft">{p.d}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="night">
+    <div class="container-x py-20">
+      <p class="eyebrow">Typical components</p>
+      <h2 class="h2 mt-4 max-w-2xl">Components to look for, and switch on as you need them.</h2>
+      <div class="mt-10 grid gap-px border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+        {enterpriseSuite.components.map((c) => <div class="bg-night px-5 py-4 text-[15px] text-white/90">{c}</div>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="container-x py-20">
+    <div class="grid gap-12 lg:grid-cols-2">
+      <div>
+        <h2 class="h2">When an integrated system makes sense</h2>
+        <ul class="mt-6 space-y-3 text-[15.5px] leading-relaxed">
+          <li class="flex gap-3"><span class="text-teal">✓</span>You need three or more areas, such as risk, audit, compliance and continuity, now or soon.</li>
+          <li class="flex gap-3"><span class="text-teal">✓</span>Findings, risks and KPIs need to trace back to the same roles and objectives.</li>
+          <li class="flex gap-3"><span class="text-teal">✓</span>You want one data model and one vendor relationship rather than several integrations.</li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="h2">When separate tools may suit better</h2>
+        <ul class="mt-6 space-y-3 text-[15.5px] leading-relaxed">
+          <li class="flex gap-3"><span class="text-gold">—</span>One area, such as internal audit or document control, is the clear priority.</li>
+          <li class="flex gap-3"><span class="text-gold">—</span>You need deep specialist features a broad suite may not match.</li>
+          <li class="flex gap-3"><span class="text-gold">—</span>Different departments already run tools that work well.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="mt-12 text-[13px] font-semibold uppercase tracking-[0.16em] text-gold">Regional checks</p>
+    <div class="mt-4 flex flex-wrap gap-2">{regionalCriteria.map((c) => <span class="border border-line px-3 py-1.5 text-[13.5px]">{c}</span>)}</div>
+  </section>
+
+  <section class="bg-paper">
+    <div class="container-x py-16">
+      <h2 class="h2">Or start with one area</h2>
+      <div class="mt-8 grid border-t border-l border-line sm:grid-cols-2 lg:grid-cols-3">
+        {modules.map((m) => (
+          <a href={`/compliance-software/${m.slug}/`} class="group border-r border-b border-line bg-paper p-6 transition hover:bg-white">
+            <p class="text-[17px] font-medium transition group-hover:text-teal">{m.name.charAt(0).toUpperCase() + m.name.slice(1)}</p>
+            <p class="mt-2 text-[14px] leading-relaxed text-ink-soft">{m.short}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Faq items={faqs} title="Questions" />
+  <CtaBand title="Not sure where to start?" text="The GRC maturity check shows which areas are weakest, and where a system would help first." href="/resources/grc-maturity-check/" label="Take the GRC maturity check" />
+</Base>

@@ -1,0 +1,95 @@
+---
+import Base from '../../layouts/Base.astro';
+import LeadForm from '../../components/LeadForm.astro';
+import Faq from '../../components/Faq.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { modules, platformCapabilities, regionalCriteria, selectionServices } from '../../data/grc';
+
+const before = ['Risk registers in spreadsheets, refreshed once a year', 'Audit findings followed up by email', 'The same security controls answered separately for ISO, regulators and customers', 'Several versions of the same procedure on shared drives', 'Board packs rebuilt by hand every quarter'];
+const after = ['A live risk register linked to controls and owners', 'Findings with owners, due dates and reminders', 'One control mapped to every framework it satisfies', 'One controlled, approved version of each document', 'Committee reports generated from live data'];
+const faqs = [
+  { q: 'Do you sell GRC software?', a: 'No. ISO GRC Advisory doesn’t build or sell software. We help you define requirements, compare established global and regional platforms, and implement the one you choose. If we have a commercial relationship with a platform you’re evaluating, we’ll tell you before you evaluate it.' },
+  { q: 'Do we need software at all?', a: 'Not always. If your framework is still being defined, or volumes are small, well-controlled documents and spreadsheets can work. Software pays off when evidence, owners and frameworks multiply.' },
+  { q: 'Do we have to replace everything at once?', a: 'No. Most organisations start with one or two areas, often risk, audit follow-up or document control, and add others once the first is in daily use.' },
+  { q: 'What matters most for buyers in the UAE and Saudi Arabia?', a: 'Data hosting and residency, Arabic and English support, ready content for national frameworks such as NCA ECC, SAMA and UAE IA, and local implementation support. Check each platform on these early.' },
+];
+---
+<Base title="GRC Software Selection & Implementation" description="Choose and implement the right GRC, risk, audit, cybersecurity or quality software: requirements, shortlist, scripted demos and rollout in the UAE and KSA." schema={{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }} crumbs={[{ name: 'GRC Advisory', href: '/grc/' }, { name: 'Software selection' }]}>
+  <section class="hero">
+    <div class="container-x grid items-start gap-10 py-16 lg:grid-cols-[1.1fr_1fr]">
+      <div>
+        <p class="eyebrow">GRC Advisory · Software selection</p>
+        <h1 class="h1 mt-3">Choose GRC software that fits how you actually work</h1>
+        <p class="lead-text mt-6">There are many capable governance, risk and compliance platforms, global and regional. The hard part is choosing the one that fits your frameworks, users, hosting needs and budget, then getting people to use it. We help with both.</p>
+        <p class="mt-6 text-[14px] leading-relaxed text-ink-soft">We don’t build or sell software. If we have a commercial relationship with a platform you’re evaluating, we’ll tell you before you evaluate it.</p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="/resources/grc-software-buyers-guide/" class="btn-ghost">Buyer’s checklist</a>
+          <a href="/resources/grc-maturity-check/" class="btn-ghost">GRC maturity check</a>
+        </div>
+      </div>
+      <LeadForm route="compliance-software" heading="Get help choosing GRC software" sub="Tell us the areas and frameworks that matter. We’ll get back to you about the next step." />
+    </div>
+  </section>
+
+  <section class="container-x py-16">
+    <p class="eyebrow">How we help</p>
+    <h2 class="h2 mt-4 max-w-2xl">From requirements to a system people use.</h2>
+    <ol class="mt-10 grid gap-x-10 gap-y-8 md:grid-cols-2 lg:grid-cols-3">
+      {selectionServices.map((s, i) => (
+        <li class="border-t border-ink/15 pt-5">
+          <span class="text-[13px] font-semibold tabular-nums text-gold">0{i + 1}</span>
+          <p class="mt-2 text-[18px] font-medium">{s.t}</p>
+          <p class="mt-2 text-[15px] leading-relaxed text-ink-soft">{s.d}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="bg-paper">
+    <div class="container-x py-16">
+      <h2 class="h2">What changes with the right software</h2>
+      <div class="mt-8 grid gap-4 md:grid-cols-2">
+        <div class="card"><p class="eyebrow">Today</p><ul class="mt-3 space-y-2 text-ink-soft">{before.map((b) => <li class="flex gap-2"><span>✕</span>{b}</li>)}</ul></div>
+        <div class="card"><p class="eyebrow">After</p><ul class="mt-3 space-y-2">{after.map((a) => <li class="flex gap-2"><span class="text-teal">✓</span>{a}</li>)}</ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-x py-16">
+    <p class="eyebrow">Software guides</p>
+    <h2 class="h2 mt-4">What each type of software should do</h2>
+    <p class="mt-3 max-w-2xl text-ink-soft">Plain guides to each category: the capabilities to look for, the process it should support and the questions to ask vendors.</p>
+    <div class="mt-10 grid border-t border-l border-line sm:grid-cols-2 lg:grid-cols-3">
+      {modules.map((m) => (
+        <a href={`/compliance-software/${m.slug}/`} class="group border-r border-b border-line p-6 transition hover:bg-paper">
+          <p class="text-[17px] font-medium transition group-hover:text-teal">{m.name}</p>
+          <p class="mt-2 text-[14px] leading-relaxed text-ink-soft">{m.short}</p>
+        </a>
+      ))}
+      <a href="/compliance-software/enterprise-management/" class="group border-r border-b border-line bg-paper p-6 transition hover:bg-white">
+        <p class="text-[17px] font-medium transition group-hover:text-teal">Integrated enterprise management systems</p>
+        <p class="mt-2 text-[14px] leading-relaxed text-ink-soft">When one connected system for strategy, people, risk, compliance and audit makes sense.</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="night">
+    <div class="container-x py-16">
+      <p class="eyebrow">For the UAE and Saudi Arabia</p>
+      <h2 class="h2 mt-4">Check these early in any evaluation</h2>
+      <div class="mt-8 grid gap-px border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+        {regionalCriteria.map((c) => <div class="bg-night px-5 py-4 text-[15px] text-white/90">{c}</div>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="container-x py-16">
+    <h2 class="h2">What good GRC software does</h2>
+    <div class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {platformCapabilities.map((c) => <div><p class="font-semibold">{c.t}</p><p class="mt-2 text-[14px] leading-relaxed text-ink-soft">{c.d}</p></div>)}
+    </div>
+  </section>
+
+  <Faq items={faqs} title="Questions" />
+  <CtaBand title="Need the framework before the software?" text="If roles, risk appetite or the control set aren’t defined yet, start with GRC consulting. Software works best on a clear framework." href="/grc/" label="See GRC consulting" />
+</Base>

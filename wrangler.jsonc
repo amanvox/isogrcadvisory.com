@@ -1,0 +1,12 @@
+{
+  "name": "isogrcadvisory",
+  "compatibility_date": "2026-10-18",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    { "pattern": "isogrcadvisory.com", "custom_domain": true },
+    { "pattern": "www.isogrcadvisory.com", "custom_domain": true }
+  ]
+}

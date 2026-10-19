@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site } from '../data/site';
+
+const audiences = [
+  { t: 'Organisations preparing for ISO certification', d: 'Contractors, suppliers, service providers and public-sector bodies responding to a tender clause, customer requirement or regulator.' },
+  { t: 'Quality, risk and compliance teams', d: 'Managers who need trained internal auditors, a gap assessment, or a clearer way to evidence controls across several frameworks.' },
+  { t: 'HR and L&D leaders', d: 'Teams building academies, leadership pipelines, assessments and AI capability across the workforce.' },
+  { t: 'Professionals building a career in audit and compliance', d: 'Individuals looking for internal auditor, lead auditor and related professional courses.' },
+];
+---
+<Base title="About Us: ISO, GRC & Training Advisory" description={`${site.name} helps organisations in the UAE and Saudi Arabia with ISO readiness, auditor training, GRC and workforce capability.`} crumbs={[{ name: 'About' }]}>
+  <section class="hero">
+    <div class="container-x max-w-4xl py-20">
+      <p class="eyebrow">About {site.name}</p>
+      <h1 class="h1 mt-5">Practical compliance capability for the UAE and Saudi Arabia.</h1>
+      <p class="lead-text mt-6 max-w-2xl">{site.name} helps organisations understand what an ISO standard, tender clause or national framework is really asking for, and build the systems, evidence and skills to meet it.</p>
+    </div>
+  </section>
+
+  <section class="container-x grid gap-12 py-20 lg:grid-cols-[1fr_1.4fr]">
+    <div>
+      <p class="eyebrow">What we focus on</p>
+      <h2 class="h2 mt-4">Three areas, kept distinct.</h2>
+    </div>
+    <div class="border-t border-line">
+      {[
+        ['ISO advisory', 'Readiness reviews, gap assessments, implementation support and preparation for the certification audit.', '/iso/'],
+        ['Training', 'Foundation, internal auditor and lead auditor courses, plus risk, continuity, AI and professional programmes — public, virtual or in-house.', '/training/'],
+        ['Workforce, GRC and capability', 'Academies, assessments and coaching; GRC frameworks, regulatory mapping and help choosing the software that supports them.', '/workforce/'],
+      ].map(([t, d, href]) => (
+        <a href={href} class="group block border-b border-line py-6">
+          <p class="text-[19px] font-medium transition group-hover:text-teal">{t} →</p>
+          <p class="mt-2 text-[15px] leading-relaxed text-ink-soft">{d}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="bg-paper">
+    <div class="container-x py-20">
+      <p class="eyebrow">Who we work with</p>
+      <h2 class="h2 mt-4 max-w-2xl">Built for the people who have to produce the evidence.</h2>
+      <div class="mt-12 grid gap-10 md:grid-cols-2">
+        {audiences.map((a) => <div class="border-t border-ink/15 pt-5"><p class="text-[17px] font-semibold">{a.t}</p><p class="mt-2 text-[15px] leading-relaxed text-ink-soft">{a.d}</p></div>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="container-x grid gap-12 py-20 lg:grid-cols-2">
+    <div>
+      <p class="eyebrow">How an engagement runs</p>
+      <ol class="mt-6 space-y-5">
+        {['A short scoping call to understand the requirement, timeline and what already exists.', 'A written proposal with scope, approach, timeline and fees.', 'Delivery by qualified consultants, auditors and trainers suited to the requirement.', 'Where certification is the goal, you appoint an independent, accredited certification body for the audit.'].map((s, i) => (
+          <li class="flex gap-4"><span class="text-[13px] font-semibold tabular-nums text-gold">0{i + 1}</span><span class="text-[15.5px] leading-relaxed">{s}</span></li>
+        ))}
+      </ol>
+    </div>
+    <div>
+      <p class="eyebrow">What we don’t do</p>
+      <ul class="mt-6 space-y-4 text-[15.5px] leading-relaxed">
+        <li>We don’t issue ISO certificates. Organisational certification is carried out by independent certification bodies.</li>
+        <li>We don’t guarantee audit, tender or regulatory outcomes. We help you build a system that genuinely meets the requirement and the evidence to show it.</li>
+        <li>We don’t publish client names or results without permission.</li>
+      </ul>
+    </div>
+  </section>
+  <CtaBand />
+</Base>

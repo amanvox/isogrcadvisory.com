@@ -1,0 +1,15 @@
+---
+import { site } from '../data/site';
+const wa = `https://wa.me/${site.contact.whatsapp}?text=${encodeURIComponent('Hi, I found ' + site.name + ' and would like to discuss ISO / training needs.')}`;
+---
+<div class="fixed inset-x-0 bottom-0 z-40 grid grid-cols-3 border-t border-line bg-white text-center text-xs font-bold md:hidden">
+  <a href={`tel:${site.contact.phoneUAE}`} class="py-3.5" data-track="call_click">Call</a>
+  <a href={wa} class="border-x border-line py-3.5 text-teal" target="_blank" rel="noopener" data-track="whatsapp_click">WhatsApp</a>
+  <a href="/enquire/" class="bg-teal py-3.5 text-white" data-track="cta_click">Get a quote</a>
+</div>
+<script>
+  import { track } from '../scripts/lead';
+  document.querySelectorAll<HTMLElement>('[data-track]').forEach((el) =>
+    el.addEventListener('click', () => track(el.dataset.track!, { page: location.pathname })),
+  );
+</script>

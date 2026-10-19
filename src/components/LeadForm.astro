@@ -1,0 +1,256 @@
+---
+// Two-step lead form. Step 1 is short and consented (sent as a partial lead so abandoned
+// step-2s aren't lost). Step 2 asks only the questions for the chosen route.
+import { site, routes } from '../data/site';
+import { launchedStandards } from '../data/standards';
+
+interface Props {
+  route?: string;
+  standard?: string; // standard slug to pre-tick
+  course?: string;
+  heading?: string;
+  sub?: string;
+}
+const { route = '', standard = '', course = '', heading = 'Tell us what you need', sub = 'We’ll get back to you about the next step.' } = Astro.props;
+---
+<div class="form-panel border-t-2 border-gold bg-white p-6 text-ink shadow-[0_24px_60px_-30px_rgba(0,0,0,0.45)] sm:p-8" id="enquiry">
+  <p class="text-[22px] font-medium tracking-[-0.015em]">{heading}</p>
+  <p class="mt-1 text-sm text-ink-soft">{sub}</p>
+
+  <form data-lead-form data-endpoint={site.leadEndpoint} data-wa={site.contact.whatsapp} class="mt-6" novalidate>
+    <input type="hidden" name="course" value={course} />
+    <input type="hidden" name="readiness_score" value="" />
+    <div class="hidden" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></div>
+
+    <!-- STEP 1 -->
+    <fieldset data-step="1" class="space-y-4">
+      <legend class="sr-only">Your details</legend>
+      <div>
+        <label class="label" for="f-route">I need help with</label>
+        <select class="field" id="f-route" name="route" required>
+          <option value="">Select…</option>
+          {routes.map((r) => <option value={r.id} selected={r.id === route}>{r.label}</option>)}
+        </select>
+      </div>
+      <div><label class="label" for="f-name">Full name</label><input class="field" id="f-name" name="name" autocomplete="name" required /></div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div><label class="label" for="f-email">Work email</label><input class="field" id="f-email" type="email" name="email" autocomplete="email" /></div>
+        <div><label class="label" for="f-phone">Mobile / WhatsApp</label><input class="field" id="f-phone" type="tel" name="phone" autocomplete="tel" placeholder="+971 / +966" /></div>
+      </div>
+      <p class="-mt-2 text-xs text-ink-soft">Email or mobile — at least one is required.</p>
+      <div>
+        <span class="label">Country</span>
+        <div class="flex flex-wrap gap-2">
+          {['UAE', 'Saudi Arabia', 'Other'].map((c) => (
+            <label class="flex cursor-pointer items-center gap-2 rounded-lg border border-ink/20 px-3.5 py-2 text-sm has-[:checked]:border-teal has-[:checked]:bg-teal/5">
+              <input type="radio" name="country" value={c} required class="accent-teal" /> {c}
+            </label>
+          ))}
+        </div>
+      </div>
+      <label class="flex items-start gap-2.5 text-sm">
+        <input type="checkbox" name="consent_service" value="yes" required class="mt-1 accent-teal" />
+        <span>I agree to ISO GRC Advisory contacting me about this enquiry. My details may be shared with specialist partners engaged to fulfil it. <a href="/privacy/" class="underline">Privacy notice</a></span>
+      </label>
+      <p data-error class="hidden rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"></p>
+      <button type="button" data-next class="btn-primary w-full">Continue</button>
+    </fieldset>
+
+    <!-- STEP 2 -->
+    <fieldset data-step="2" class="hidden space-y-4">
+      <legend class="sr-only">About your requirement</legend>
+      <p class="text-[13.5px] text-ink-soft">Thanks — that’s enough for us to respond. The questions below are optional and help us prepare.</p>
+      <div><label class="label" for="f-company">Organisation</label><input class="field" id="f-company" name="company" autocomplete="organization" /></div>
+
+      <div data-for="iso-consulting" class="space-y-4">
+        <div>
+          <span class="label">Standard(s)</span>
+          <div class="grid grid-cols-2 gap-1.5 text-sm sm:grid-cols-3">
+            {launchedStandards.map((s) => (
+              <label class="flex items-center gap-2"><input type="checkbox" name="standards" value={s.code.split(':')[0]} checked={s.slug === standard} class="accent-teal" /> {s.code.split(':')[0]}</label>
+            ))}
+          </div>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div><label class="label">Current status</label>
+            <select class="field" name="current_status"><option value="">Select…</option><option value="starting">Starting from scratch</option><option value="partial">Some processes documented</option><option value="certified">Already certified — renewal / transition</option><option value="failed-audit">Had audit findings to close</option></select></div>
+          <div><label class="label">What’s driving it?</label>
+            <select class="field" name="trigger"><option value="">Select…</option><option value="tender">Tender / prequalification</option><option value="customer">Customer requirement</option><option value="regulator">Regulator / parent company</option><option value="renewal">Renewal / transition</option><option value="internal">Internal improvement</option></select></div>
+        </div>
+        <div><label class="label">Number of sites</label><input class="field" name="sites" inputmode="numeric" placeholder="e.g. 1" /></div>
+      </div>
+
+      <div data-for="iso-training other-training" class="space-y-4">
+        <div><label class="label">Course</label><input class="field" name="course_text" value={course} placeholder="e.g. ISO 27001 Lead Auditor" /></div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div><label class="label">This is for</label>
+            <select class="field" name="buyer_type"><option value="">Select…</option><option value="individual">Myself</option><option value="team">My team / company</option></select></div>
+          <div><label class="label">Participants</label><input class="field" name="participants" inputmode="numeric" placeholder="e.g. 8" /></div>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div><label class="label">Format</label>
+            <select class="field" name="format"><option value="">Any</option><option value="public">Public course</option><option value="in-house">In-house at our premises</option><option value="virtual">Virtual</option></select></div>
+          <div><label class="label">Preferred month</label><input class="field" name="preferred_month" type="month" /></div>
+        </div>
+      </div>
+
+      <div data-for="workforce-ld" class="space-y-4">
+        <div><label class="label">Area</label>
+          <select class="field" name="ld_area"><option value="">Select…</option><option>Corporate academy design</option><option>Leadership assessment / succession</option><option>Coaching programme</option><option>AI capability building</option><option>E-learning, SCORM, VR/AR content</option><option>Competency framework / workforce planning</option><option>HR & learning ISO standards</option><option>Other</option></select></div>
+        <div><label class="label">Employees in scope</label><input class="field" name="participants" inputmode="numeric" placeholder="e.g. 250" /></div>
+      </div>
+
+      <div data-for="compliance-software" class="space-y-4">
+        <div>
+          <span class="label">Modules of interest</span>
+          <div class="grid grid-cols-2 gap-1.5 text-sm">
+            {['GRC & obligations', 'Enterprise risk', 'Internal audit', 'Cybersecurity compliance', 'Quality (QMS)', 'HSE & ESG', 'Business continuity', 'Document control', 'Excellence & awards'].map((m) => (
+              <label class="flex items-center gap-2"><input type="checkbox" name="modules" value={m} class="accent-teal" /> {m}</label>
+            ))}
+          </div>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div><label class="label">Users</label><select class="field" name="users"><option value="">Select…</option><option>Under 25</option><option>25–100</option><option>100–500</option><option>500+</option></select></div>
+          <div><label class="label">Current tools</label><input class="field" name="current_tools" placeholder="Spreadsheets, SharePoint, other GRC…" /></div>
+        </div>
+        <div><label class="label">Hosting preference</label>
+          <select class="field" name="hosting"><option value="">No preference yet</option><option>Cloud</option><option>In-country cloud (data residency)</option><option>On-premise / private cloud</option></select></div>
+      </div>
+
+      <div data-for="grc-consulting compliance-software" class="space-y-4">
+        <div>
+          <span class="label">Frameworks / regulations in scope</span>
+          <div class="grid grid-cols-2 gap-1.5 text-sm">
+            {['NCA ECC', 'NCA CCC / CSCC / DCC / OTCC', 'SACS-002 (CCC)', 'SAMA', 'Saudi PDPL', 'NDMO', 'UAE IA', 'UAE PDPL', 'NCEMA 7000', 'ISO 27001', 'ISO 22301', 'ISO 31000', 'ISO 37301', 'IIA standards'].map((m) => (
+              <label class="flex items-center gap-2"><input type="checkbox" name="frameworks" value={m} class="accent-teal" /> {m}</label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div data-for="grc-consulting" class="space-y-4">
+        <div><label class="label">Main need</label>
+          <select class="field" name="grc_need"><option value="">Select…</option><option>GRC framework design</option><option>Enterprise risk management</option><option>Regulatory gap assessment / mapping</option><option>Internal audit capability</option><option>Business continuity programme</option><option>Compliance management (ISO 37301 / 37001)</option></select></div>
+        <div><label class="label">What’s driving it?</label>
+          <select class="field" name="trigger"><option value="">Select…</option><option value="regulator">Regulator assessment / deadline</option><option value="customer">Customer or parent requirement</option><option value="renewal">Audit findings to close</option><option value="internal">Board / internal initiative</option></select></div>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div><label class="label">Your role</label>
+          <select class="field" name="decision_role"><option value="">Select…</option><option value="decision-maker">I approve the budget</option><option value="influencer">I recommend / evaluate</option><option value="researching">I’m researching options</option><option value="individual">Individual learner</option></select></div>
+        <div><label class="label">Organisation size</label>
+          <select class="field" name="employees"><option value="">Select…</option><option>1-9</option><option>10-49</option><option>50-249</option><option>250-999</option><option>1000+</option></select></div>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div><label class="label">Timeline</label>
+          <select class="field" name="timeline"><option value="">Select…</option><option value="under-3">Within 3 months</option><option value="3-6">3–6 months</option><option value="6-12">6–12 months</option><option value="exploring">Just exploring</option></select></div>
+        <div><label class="label">City</label><input class="field" name="city" placeholder="Riyadh, Dubai…" /></div>
+      </div>
+      <div><label class="label">Anything else?</label><textarea class="field" name="message" rows="3" placeholder="Deadlines, sector, what you have tried…"></textarea></div>
+      <div>
+        <span class="label">Best way to reach you</span>
+        <div class="flex flex-wrap gap-3 text-sm">
+          {['Email', 'Phone call', 'WhatsApp'].map((p, i) => <label class="flex items-center gap-2"><input type="radio" name="contact_pref" value={p} checked={i === 0} class="accent-teal" /> {p}</label>)}
+        </div>
+      </div>
+      <label class="flex items-start gap-2.5 text-sm text-ink-soft">
+        <input type="checkbox" name="consent_marketing" value="yes" class="mt-1 accent-teal" />
+        <span>Optional: send me occasional guides and course dates. You can unsubscribe at any time.</span>
+      </label>
+      <div class="flex flex-col gap-2 sm:flex-row-reverse">
+        <button type="submit" class="btn-primary flex-1">Send enquiry</button>
+        <button type="submit" class="btn-ghost" formnovalidate>Skip and send</button>
+        <button type="button" data-back class="btn-ghost">Back</button>
+      </div>
+    </fieldset>
+  </form>
+</div>
+
+<script>
+  import { scoreLead, newLeadId, sendLead, getContext, track } from '../scripts/lead';
+
+  function collect(form: HTMLFormElement) {
+    const fd = new FormData(form);
+    const out: Record<string, string> = {};
+    for (const [k, v] of fd.entries()) {
+      const val = String(v).trim();
+      if (!val) continue;
+      out[k] = out[k] ? `${out[k]}, ${val}` : val;
+    }
+    if (out.course_text) out.course = out.course_text;
+    delete out.course_text;
+    return out;
+  }
+
+  function showRoute(form: HTMLFormElement) {
+    const route = (form.elements.namedItem('route') as HTMLSelectElement).value;
+    form.querySelectorAll<HTMLElement>('[data-for]').forEach((el) => {
+      const on = el.dataset.for!.split(' ').includes(route);
+      el.classList.toggle('hidden', !on);
+      el.querySelectorAll<HTMLInputElement>('input,select,textarea').forEach((i) => (i.disabled = !on));
+    });
+  }
+
+  document.querySelectorAll<HTMLFormElement>('form[data-lead-form]').forEach((form) => {
+    const step1 = form.querySelector<HTMLElement>('[data-step="1"]')!;
+    const step2 = form.querySelector<HTMLElement>('[data-step="2"]')!;
+    const err = form.querySelector<HTMLElement>('[data-error]')!;
+    const endpoint = form.dataset.endpoint || '';
+    const leadId = newLeadId();
+    let started = false;
+
+    // Pull readiness score / course from the URL when arriving from a tool or course card.
+    const qs = new URLSearchParams(location.search);
+    const set = (n: string, v: string | null) => { const el = form.elements.namedItem(n) as HTMLInputElement | null; if (el && v) el.value = v; };
+    set('route', qs.get('route')); set('course', qs.get('course')); set('course_text', qs.get('course')); set('readiness_score', qs.get('score'));
+    const qStd = qs.get('standard');
+    if (qStd) form.querySelectorAll<HTMLInputElement>('input[name="standards"]').forEach((c) => { if (c.value === qStd) c.checked = true; });
+
+    form.addEventListener('focusin', () => { if (!started) { started = true; track('form_start', { page: location.pathname }); } });
+
+    function payload(stage: 'partial' | 'complete') {
+      const data = collect(form);
+      return { lead_id: leadId, stage, submitted_at: new Date().toISOString(), page: location.pathname, ...data, score: scoreLead(data), ...getContext() };
+    }
+
+    form.querySelector('[data-next]')!.addEventListener('click', async () => {
+      const d = collect(form);
+      const problems: string[] = [];
+      if (!d.route) problems.push('choose what you need help with');
+      if (!d.name) problems.push('add your name');
+      if (!d.email && !d.phone) problems.push('add an email or mobile number');
+      if (d.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) problems.push('check your email address');
+      if (!d.country) problems.push('select your country');
+      if (!d.consent_service) problems.push('tick the contact consent box');
+      if (problems.length) { err.textContent = 'Please ' + problems.join(', ') + '.'; err.classList.remove('hidden'); return; }
+      err.classList.add('hidden');
+      if (d.website) return; // honeypot
+      showRoute(form);
+      step1.classList.add('hidden');
+      step2.classList.remove('hidden');
+      step2.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      track('lead_step1', { route: d.route, country: d.country });
+      try { await sendLead(endpoint, payload('partial')); } catch { /* final submit retries */ }
+    });
+
+    form.querySelector('[data-back]')!.addEventListener('click', () => { step2.classList.add('hidden'); step1.classList.remove('hidden'); });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const p = payload('complete');
+      if ((p as Record<string, unknown>).website) return;
+      const btn = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+      btn.disabled = true; btn.textContent = 'Sending…';
+      let sent = false;
+      try { sent = await sendLead(endpoint, p); } catch { sent = false; }
+      track('generate_lead', { route: p.route, tier: p.score.tier, value: p.score.total });
+      try { sessionStorage.setItem('cd_last_lead', JSON.stringify({ id: leadId, route: p.route, sent })); } catch {}
+      if (!sent) {
+        // No endpoint configured (or network failure): hand off via WhatsApp so the lead isn't lost.
+        const msg = `New enquiry ${leadId}\nNeed: ${p.route}\nName: ${p.name}\nCompany: ${p.company || '-'}\nCountry: ${p.country}\n${p.standards ? 'Standards: ' + p.standards + '\n' : ''}${p.course ? 'Course: ' + p.course + '\n' : ''}${p.message || ''}`;
+        window.open(`https://wa.me/${form.dataset.wa}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+      }
+      location.href = '/thank-you/';
+    });
+  });
+</script>

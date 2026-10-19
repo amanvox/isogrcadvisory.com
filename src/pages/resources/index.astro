@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+const items = [
+  { href: '/resources/iso-readiness-check/', t: 'ISO readiness check', d: 'Seven questions, instant result — see how close your management system is to audit-ready.' },
+  { href: '/resources/iso-standard-selection-guide/', t: 'Which ISO standard do I need?', d: 'Map tender clauses, customer demands and regulator expectations to the right standard in the UAE and KSA.' },
+  { href: '/resources/grc-maturity-check/', t: 'GRC maturity check', d: 'Ten questions across governance, risk, audit, cyber and continuity — with the first areas to fix.' },
+  { href: '/resources/grc-software-buyers-guide/', t: 'GRC software buyer’s checklist', d: 'What to check before choosing a GRC platform in the UAE or KSA.' },
+  { href: '/resources/internal-vs-lead-auditor/', t: 'Internal auditor vs lead auditor', d: 'Which course fits your role, and when one is enough.' },
+];
+---
+<Base title="Free ISO & GRC Guides and Self-Assessments" description="Free guides and self-assessments for ISO certification readiness, GRC maturity, GRC software selection and auditor training in the UAE and Saudi Arabia." crumbs={[{ name: 'Resources' }]}>
+  <PageHeader eyebrow="Resources" title="Guides and tools" lead="Free self-assessments and plain-English guides for ISO, GRC and training decisions in the UAE and Saudi Arabia." />
+  <section class="container-x py-14">
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {items.map((i) => <a href={i.href} class="card transition hover:border-teal"><p class="font-semibold">{i.t}</p><p class="mt-2 text-sm text-ink-soft">{i.d}</p></a>)}
+    </div>
+  </section>
+</Base>

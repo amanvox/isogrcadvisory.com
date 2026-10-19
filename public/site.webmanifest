@@ -1,0 +1,11 @@
+{
+  "name": "ISO GRC Advisory",
+  "short_name": "ISO GRC Advisory",
+  "icons": [
+    { "src": "/brand/mark-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/brand/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ],
+  "theme_color": "#061A2E",
+  "background_color": "#FFFFFF",
+  "display": "browser"
+}

@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { locations } from '../../data/locations';
+import { site } from '../../data/site';
+
+const served = locations.filter((l) => (site.servedCities as readonly string[]).includes(l.slug));
+---
+<Base title="Where We Work: Saudi Arabia & the UAE" description="ISO readiness, GRC advisory and auditor training for organisations in Riyadh, Jeddah, Dammam and Al Khobar, Dubai, Abu Dhabi, Sharjah and the Northern Emirates." crumbs={[{ name: 'Where we work' }]}>
+  <PageHeader eyebrow="Where we work" title="Saudi Arabia and the UAE" lead="In-house, virtual and on-site support for organisations across both markets. Each city page covers the sectors and standards that come up most often there." />
+  {(['Saudi Arabia', 'UAE'] as const).map((country) => (
+    <section class="container-x pt-14 last-of-type:pb-14">
+      <h2 class="h2">{country === 'UAE' ? 'United Arab Emirates' : country}</h2>
+      <div class="mt-6 grid border-t border-l border-line sm:grid-cols-2 lg:grid-cols-3">
+        {served.filter((l) => l.country === country).map((l) => (
+          <a href={`/locations/${l.slug}/`} class="group border-r border-b border-line p-6 transition hover:bg-paper">
+            <p class="text-[18px] font-medium transition group-hover:text-teal">{l.city}</p>
+            <p class="mt-2 line-clamp-3 text-[14px] leading-relaxed text-ink-soft">{l.intro}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+  <div class="pb-14"></div>
+  <CtaBand />
+</Base>
